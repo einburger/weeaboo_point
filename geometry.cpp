@@ -9,7 +9,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Box* character_create(MemoryPool *pool, int x, int y, int w, int h) {
+Box* character_create(MemoryPool *pool, int x, int y, int w, int h) 
+{
 	Box* box = PUSH_OBJECT(pool, Box);
 	if (!box) { ERROR_REPORT; }
 
@@ -53,7 +54,8 @@ Box *geometry_box_create(int x, int y, int w, int h)
 	return box;
 }
 
-void geometry_box_ID(Box* box, const char* ID) {
+void geometry_box_ID(Box* box, const char* ID) 
+{
 	if (!box) { ERROR_REPORT; }
 	strcpy(box->name, ID);
 }
