@@ -16,10 +16,10 @@ static stbtt_bakedchar cdata_2[96];
 
 static GLuint ftex, btex;
 
-void text_init(const char *path, float sz) 
+void text_init(const char* path, float sz)
 {
-	char text_path[256]; 
-	text_append(text_path, FONT_PATH, (char *)path);
+	char text_path[256];
+	text_append(text_path, FONT_PATH, (char*)path);
 
 	fread(ttf_buffer, 1, 1 << 20, fopen(text_path, "rb"));
 	stbtt_BakeFontBitmap(ttf_buffer, 0, sz, temp_bitmap, 512, 512, 32, 96, cdata);
@@ -56,11 +56,12 @@ std::string text_justify(std::string& text, int max_count)
 }
 */
 
-void text_render(const char *text, float x, float y, int COLOR)
+void text_render(const char* text, float x, float y, int COLOR)
 {
 	glBindTexture(GL_TEXTURE_2D, ftex);
 
-	switch (COLOR) {
+	switch (COLOR)
+	{
 	case BLACK:
 		glColor4f(0.0, 0.0, 0.0, 1.0);
 		break;
@@ -71,9 +72,12 @@ void text_render(const char *text, float x, float y, int COLOR)
 
 	glBegin(GL_QUADS);
 	{
-		for (size_t i = 0; i < game_state->text_cursor_pos; ++i) {
-			if (*text) {
-				if (*text >= 32 && *text < 128) {
+		for (size_t i = 0; i < game_state->text_cursor_pos; ++i)
+		{
+			if (*text)
+			{
+				if (*text >= 32 && *text < 128)
+				{
 					static stbtt_aligned_quad q;
 					stbtt_GetBakedQuad(cdata, 512, 512, *text - 32, &x, &y, &q, 1);
 					glTexCoord2f(q.s0, q.t1); glVertex2f(q.x0, q.y1);
@@ -89,7 +93,7 @@ void text_render(const char *text, float x, float y, int COLOR)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void text_draw(const char *line) 
+void text_draw(const char* line)
 {
 	float xpos = game_state->scene->textbox->x_min + 180;
 	float ypos = game_state->scene->textbox->y_max - 68;
@@ -108,7 +112,7 @@ void text_draw(const char *line)
 	text_render(line, xpos, ypos, WHITE);
 }
 
-void text_append(char *destination, char *string_a, char *string_b)
+void text_append(char* destination, char* string_a, char* string_b)
 {
 	strcpy(destination, string_a);
 	strcat(destination, string_b);

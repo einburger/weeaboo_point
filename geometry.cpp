@@ -9,30 +9,29 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Box* character_create(MemoryPool *pool, int x, int y, int w, int h) 
+Character* character_create(MemoryPool* pool, int x, int y, int w, int h)
 {
-	Box* box = PUSH_OBJECT(pool, Box);
-	if (!box) { ERROR_REPORT; }
+	Character* ch = PUSH_OBJECT(pool, Box);
 
-	box->clicked = 0;
-	box->x_min = x;
-	box->y_min = y;
-	box->w = w;
-	box->h = h;
-	box->x_max = x + w;
-	box->y_max = y + h;
-	box->target_pos = 0;
-	box->r = 1.0;
-	box->g = 1.0;
-	box->b = 1.0;
-	box->a = 1.0;
-	box->wait_time = 0.0;
-	box->speed = 20.0;
+	ch->clicked = 0;
+	ch->x_min = x;
+	ch->y_min = y;
+	ch->w = w;
+	ch->h = h;
+	ch->x_max = x + w;
+	ch->y_max = y + h;
+	ch->target_pos = 0;
+	ch->r = 1.0;
+	ch->g = 1.0;
+	ch->b = 1.0;
+	ch->a = 1.0;
+	ch->wait_time = 0.0;
+	ch->speed = 20.0;
 
-	return box;
+	return ch;
 }
 
-Box *geometry_box_create(int x, int y, int w, int h)
+Box* geometry_box_create(int x, int y, int w, int h)
 {
 	Box* box = PUSH_OBJECT(&memory_pool, Box);
 	if (!box) { ERROR_REPORT; }
@@ -54,13 +53,13 @@ Box *geometry_box_create(int x, int y, int w, int h)
 	return box;
 }
 
-void geometry_box_ID(Box* box, const char* ID) 
+void geometry_box_ID(Box* box, const char* ID)
 {
 	if (!box) { ERROR_REPORT; }
 	strcpy(box->name, ID);
 }
 
-void geometry_box_position(Box *box, int x, int y)
+void geometry_box_position(Box* box, int x, int y)
 {
 	if (!box) { ERROR_REPORT; }
 
@@ -72,16 +71,18 @@ void geometry_box_position(Box *box, int x, int y)
 	box->y_max = box->y_min + box->h;
 }
 
-void geometry_box_texture(Box *box, const char *file_name)
+void geometry_box_texture(Box* box, const char* file_name)
 {
 	if (!box) { ERROR_REPORT; }
 
-	uchar *img = stbi_load(file_name, &box->sprite.w, &box->sprite.h, 0, 4); if (!img) { ERROR_REPORT; }
+	uchar* img = stbi_load(file_name, &box->sprite.w, &box->sprite.h, 0, 4); 
+	if (!img) { ERROR_REPORT; }
 	glGenTextures(1, &box->sprite.texture);
 	glBindTexture(GL_TEXTURE_2D, box->sprite.texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA
-			   , box->sprite.w, box->sprite.h
-			   , 0, GL_RGBA, GL_UNSIGNED_BYTE, img);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+				 box->sprite.w, box->sprite.h, 
+				 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+				 img);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	stbi_image_free(img);
@@ -90,7 +91,7 @@ void geometry_box_texture(Box *box, const char *file_name)
 	geometry_box_scale(box);
 }
 
-void geometry_box_color(Box *box, float r, float g, float b, float a)
+void geometry_box_color(Box* box, float r, float g, float b, float a)
 {
 	if (!box) { ERROR_REPORT; }
 	box->r = r;
@@ -99,7 +100,7 @@ void geometry_box_color(Box *box, float r, float g, float b, float a)
 	box->a = a;
 }
 
-void geometry_box_size(Box *box, int w, int h)
+void geometry_box_size(Box* box, int w, int h)
 {
 	if (!box) { ERROR_REPORT; }
 	box->x_max = box->x_min + w;
@@ -108,17 +109,18 @@ void geometry_box_size(Box *box, int w, int h)
 	box->h = h;
 }
 
-void geometry_box_scale(Box *box)
+void geometry_box_scale(Box* box)
 {
 	geometry_box_size(box, box->sprite.w, box->sprite.h);
-	if (box->h > game_state->window_height * 0.7) {
+	if (box->h > game_state->window_height * 0.7)
+	{
 		int start = box->h;
 		box->h /= (box->h / (game_state->window_height * 0.7));
-		box->w = ((box->h * box->w)/start);
+		box->w = ((box->h * box->w) / start);
 	}
 }
 
-void geometry_box_draw(Box *box)
+void geometry_box_draw(Box* box)
 {
 	if (!box) { ERROR_REPORT; }
 	glBindTexture(GL_TEXTURE_2D, box->sprite.texture);
@@ -155,38 +157,46 @@ void geometry_line_draw(int x0, int y0, int x1, int y1)
 
 
 // only gets called if an event calls it
-char geometry_box_move(Box *box, int x, int y, int speed)
+char geometry_box_move(Box* box, int x, int y, int speed)
 {
 	if (!box) { ERROR_REPORT; }
 	int s = box->speed;
 	double hyp = fabs((double)x - box->x_min);
-	if (s > hyp) {
+	if (s > hyp)
+	{
 		s = hyp - (hyp / 2);
 	}
-	if (fabs((double)box->x_min - x) > 5) { // didn't reach the target
+	if (fabs((double)box->x_min - x) > 5)
+	{ // didn't reach the target
 		if (box->x_min > x)
 			geometry_box_position(box, box->x_min - s, box->y_min);
 		else
 			geometry_box_position(box, box->x_min + s, box->y_min);
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 	return 1;
 }
 
-char geometry_box_wait(double seconds) 
+char geometry_box_wait(double seconds)
 {
 	static clock_t start, stop;
 
 	static char init_time = 0;
-	if (!init_time) {
+	if (!init_time)
+	{
 		start = clock();
 		init_time = 1;
-	} else {
+	}
+	else
+	{
 		stop = clock() - start;
 		double elapsed_time = (double)stop / CLOCKS_PER_SEC;
-		
-		if (elapsed_time > seconds) {
+
+		if (elapsed_time > seconds)
+		{
 			init_time = 0;
 			stop = start;
 			return 0;
@@ -195,29 +205,33 @@ char geometry_box_wait(double seconds)
 	return 1;
 }
 
-char geometry_box_fade(Box* box, float speed) 
+char geometry_box_fade(Box* box, float speed)
 {
-	if (box->a < 1.0) {
+	if (box->a < 1.0)
+	{
 		box->a += 0.05;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 	return 1;
 }
 
-char geometry_box_check_collision(Box *box)
+char geometry_box_check_collision(Box* box)
 {
 	if (!box) { ERROR_REPORT; }
 	double cursor_x, cursor_y;
 	glfwGetCursorPos(game_state->current_window, &cursor_x, &cursor_y);
-	return cursor_x > box->x_min && cursor_x < box->x_max
-		&& cursor_y > box->y_min && cursor_y < box->y_max;
+	return cursor_x > box->x_min&& cursor_x < box->x_max
+		&& cursor_y > box->y_min&& cursor_y < box->y_max;
 }
 
-void geometry_box_on_click(Box *box)
+void geometry_box_on_click(Box* box)
 {
 	if (!box) { ERROR_REPORT; }
-	if (cursor->clicked && geometry_box_check_collision(box)) {
+	if (cursor->clicked && geometry_box_check_collision(box))
+	{
 		box->clicked = 1;
 		cursor->clicked = 0;
 		cursor->holding_left_mouse = 1;
@@ -231,7 +245,8 @@ void geometry_box_on_click(Box *box)
 		box->y_pos_when_clicked = box->y_min;
 	}
 
-	if (cursor->holding_left_mouse && box->clicked) {
+	if (cursor->holding_left_mouse && box->clicked)
+	{
 		glfwGetCursorPos(game_state->current_window, &cursor->current_x, &cursor->current_y);
 		geometry_line_draw(cursor->click_pos_x, cursor->click_pos_y, cursor->current_x, cursor->current_y);
 
@@ -239,9 +254,11 @@ void geometry_box_on_click(Box *box)
 		float cursor_delta_x = cursor->click_pos_x - cursor->current_x;
 		float cursor_delta_y = cursor->click_pos_y - cursor->current_y;
 		geometry_box_position(box, box->x_pos_when_clicked - cursor_delta_x
-					        , box->y_pos_when_clicked - cursor_delta_y);
+							  , box->y_pos_when_clicked - cursor_delta_y);
 
-	} else {
+	}
+	else
+	{
 		box->clicked = 0;
 	}
 }

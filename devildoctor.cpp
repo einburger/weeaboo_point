@@ -11,19 +11,21 @@
 #include "memorypool.h"
 #include <assert.h>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	if (!glfwInit())
 		exit(1);
-    
-    glfwWindowHint(GLFW_SAMPLES, 8);
 
-	game_state->current_window = glfwCreateWindow(game_state->window_width
-												, game_state->window_height 
-												, game_state->window_title
-												, NULL, NULL);
+	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	if (!game_state->current_window) {
+	game_state->current_window = glfwCreateWindow(game_state->window_width, 
+												  game_state->window_height, 
+												  game_state->window_title, 
+												  NULL, 
+												  NULL);
+
+	if (!game_state->current_window)
+	{
 		glfwTerminate();
 		exit(1);
 	}
@@ -39,7 +41,7 @@ int main(int argc, char **argv)
 
 	game_state->dt = 0.001;
 	eventhandler_event_create(PARSE, NULL);
-	
+
 	glfwSetFramebufferSizeCallback(game_state->current_window, gamestate_framebuffer_size_callback);
 	glfwSetWindowSizeCallback(game_state->current_window, gamestate_window_size_callback);
 	glfwSetKeyCallback(game_state->current_window, gamestate_key_callback);
@@ -51,7 +53,8 @@ int main(int argc, char **argv)
 	glOrtho(0.0f, game_state->window_width, game_state->window_height, 0.0f, 0.0f, 1.0f);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	while (!glfwWindowShouldClose(game_state->current_window)) {
+	while (!glfwWindowShouldClose(game_state->current_window))
+	{
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.5, 0.5, 0.5, 1.0);
 		glEnable(GL_BLEND);
@@ -68,7 +71,7 @@ int main(int argc, char **argv)
 
 		glDisable(GL_TEXTURE_2D);
 	}
-	
+
 	free(memory_pool.base);
 	glfwTerminate();
 	return 1;

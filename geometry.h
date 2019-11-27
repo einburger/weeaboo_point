@@ -6,22 +6,32 @@ typedef unsigned char uchar;
 
 typedef struct Event Event;
 
-typedef struct Sprite {
+typedef struct Sprite
+{
 	unsigned int texture;
 	int w, h;
 } Sprite;
 
-typedef struct Box {
-	char name[128];
-	char clicked;
-	int x_min, y_min
-		, x_max, y_max
-		, w, h
-		, x_pos_when_clicked
-		, y_pos_when_clicked
-		, target_pos;
-	float r, g, b, a, wait_time, speed;
-	Sprite sprite;
+typedef struct Box
+{
+	char	name[128];
+	char	clicked;
+	int		x_min;
+	int		y_min;
+	int		x_max;
+	int		y_max;
+	int		w;
+	int		h;
+	int		x_pos_when_clicked;
+	int		y_pos_when_clicked;
+	int		target_pos;
+	float	r; 
+	float	g;
+	float	b;
+	float	a;
+	float	wait_time;
+	float	speed;
+	Sprite	sprite;
 } Box, Character;
 
 
@@ -30,7 +40,7 @@ typedef struct Box {
 Box* character_create(MemoryPool* pool, int x, int y, int w, int h);
 Box* geometry_box_create(int x, int y, int w, int h);
 void geometry_box_ID(Box*, const char* ID);
-void geometry_box_texture(Box*, const char *file_name);
+void geometry_box_texture(Box*, const char* file_name);
 void geometry_box_position(Box*, int x, int y);
 void geometry_box_color(Box*, float r, float g, float b, float a);
 void geometry_box_size(Box*, int x, int y);

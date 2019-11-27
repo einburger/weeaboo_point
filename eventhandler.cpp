@@ -7,9 +7,9 @@
 #include "geometry.h"
 #include "memorypool.h"
 
-void eventhandler_event_create(int ID, void *obj) 
+void eventhandler_event_create(int ID, void* obj)
 {
-	Event *event = PUSH_OBJECT(&event_stack, Event);
+	Event* event = PUSH_OBJECT(&event_stack, Event);
 	event->ID = ID;
 	event->obj = obj;
 
@@ -40,29 +40,35 @@ void eventhandler_event_create(int ID, void *obj)
 
 void eventhandler_event_handle()
 {
-	Event *event = NULL;
-	if (event_stack.used_size == 0) {
+	Event* event = NULL;
+	if (event_stack.used_size == 0)
+	{
 		eventhandler_event_create(PARSE, NULL);
 		event = GET_END(&event_stack, Event);
 	}
 
-	for (size_t i = 0; i * sizeof(Event) < event_stack.used_size; ++i) {
-		event = ((Event *)event_stack.base) + i;
+	for (size_t i = 0; i * sizeof(Event) < event_stack.used_size; ++i)
+	{
+		event = ((Event*)event_stack.base) + i;
 
-		Character* ch = (Character *)event->obj;
-		switch (event->ID) {
+		Character* ch = (Character*)event->obj;
+		switch (event->ID)
+		{
 		case MOVE:
-			if (!event_move(ch, ch->target_pos, ch->y_min, ch->speed)) {
+			if (!event_move(ch, ch->target_pos, ch->y_min, ch->speed))
+			{
 				move_to_end_and_remove(event);
 			}
 			break;
 		case FADE:
-			if (!event_fade(ch, ch->speed)) { 
+			if (!event_fade(ch, ch->speed))
+			{
 				move_to_end_and_remove(event);
 			}
 			break;
 		case WAIT:
-			if (!event_wait(ch->wait_time)) {
+			if (!event_wait(ch->wait_time))
+			{
 				move_to_end_and_remove(event);
 			}
 			break;
@@ -71,12 +77,15 @@ void eventhandler_event_handle()
 			event_parse();
 			break;
 		case WRITE:
-			if (game_state->text_cursor_pos < strlen((const char*)event->obj)) {
+			if (game_state->text_cursor_pos < strlen((const char*)event->obj))
+			{
 				game_state->text_cursor_pos++;
 				event_write((const char*)event->obj);
-			} else { // line was written, so wait for input after line is written
+			}
+			else
+			{ // line was written, so wait for input after line is written
 				POP_OBJECT(&event_stack, Event);
-				eventhandler_event_create(GET_INPUT, NULL); 
+				eventhandler_event_create(GET_INPUT, NULL);
 			}
 			break;
 		case GET_INPUT:
@@ -86,14 +95,14 @@ void eventhandler_event_handle()
 	}
 }
 
-void eventhandler_event_a_eq_b(Event* a, Event* b) 
+void eventhandler_event_a_eq_b(Event* a, Event* b)
 {
 	a->ID = b->ID;
 	a->obj = b->obj;
 	a->u = b->u;
 }
 
-void move_to_end_and_remove(Event* e) 
+void move_to_end_and_remove(Event* e)
 {
 	Event* last = GET_END(&event_stack, Event);
 	eventhandler_event_a_eq_b(e, last);

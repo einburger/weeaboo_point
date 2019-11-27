@@ -4,18 +4,20 @@
 extern struct Scene* scene; //forward declaration
 extern struct Box* box;
 
-typedef struct CursorState {
-	char holding_left_mouse; 
-	char clicked;
-	double current_x
-		 , current_y
-		 , click_pos_x
-		 , click_pos_y;
+typedef struct CursorState
+{
+	char				holding_left_mouse;
+	char				clicked;
+	double				current_x; 
+	double				current_y; 
+	double				click_pos_x; 
+	double				click_pos_y;
 } CursorState;
 
-typedef struct GameState {
-	FILE*               current_file;
-	GLFWwindow*         current_window;
+typedef struct GameState
+{
+	FILE*				current_file;
+	GLFWwindow*			current_window;
 	Box*				last_clicked_box;
 	struct Scene*		scene;
 	int                 window_width;
@@ -23,17 +25,18 @@ typedef struct GameState {
 	int			        fps;
 	size_t              text_cursor_pos;
 	double		        dt;
-	const char*         window_title;
+	const char*			window_title;
 	char				waiting_for_input;
 } GameState;
 
-typedef struct SaveState {
-	int box_pos_x
-	  , box_pos_y
-	  , box_width
-	  , box_height
-	  , window_width
-	  , window_height;
+typedef struct SaveState
+{
+	int					box_pos_x; 
+	int					box_pos_y; 
+	int					box_width; 
+	int					box_height;
+	int					window_width;
+	int					window_height;
 } SaveState;
 
 

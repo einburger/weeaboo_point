@@ -16,16 +16,17 @@ exit(EXIT_FAILURE);
 
 #define arr_size(a) sizeof(a) / sizeof(&a[0])
 
-extern GameState   *game_state;
-extern CursorState *cursor;
-extern SaveState   *save_state;
+extern GameState*	game_state;
+extern CursorState* cursor;
+extern SaveState*	save_state;
 
 MemoryPool memory_pool;
 MemoryPool script_pool;
 MemoryPool character_pool; // doesn't actually own memory itself, just maintains the location
 MemoryPool event_stack;
 
-enum EVENT_ID {
+enum EVENT_ID
+{
 	MOVE,
 	WAIT,
 	FADE,
@@ -34,7 +35,8 @@ enum EVENT_ID {
 	GET_INPUT
 };
 
-enum COLOR {
+enum COLOR
+{
 	BLACK,
 	WHITE
 };
