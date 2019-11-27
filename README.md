@@ -11,7 +11,7 @@ at [image]                       // loads a background
 place [character] [x pos]        // places a character at that x position (in % of screen width) 
 fadein [character] [speed]       // fades in a character at that speed
 wait [character] [time in s]     // wait for s seconds
-move [character] [xpos] [speed]  // moves character to x position (in % of screen width) at speed
+move [character] [x pos] [speed]  // moves character to x position (in % of screen width) at speed
 exit [character] (left|right)    // exits the character stage left or right
 sync                             // makes previous action run at the same time as the following one
 > [text]                         // write dialog
