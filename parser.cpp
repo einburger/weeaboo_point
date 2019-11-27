@@ -30,7 +30,7 @@ void read_file()
 	{
 		Line* sline = PUSH_OBJECT(&script_pool, Line);
 		if (!fgets(sline->line, sizeof(sline->line), game_state->current_file))
-		{
+		{ // whoops, no next line so remove the most recent allocation
 			POP_OBJECT(&script_pool, Line);
 			break;
 		}
@@ -39,62 +39,58 @@ void read_file()
 
 Line* parser_get_line(size_t line_number)
 {
-	Line* xline = ((Line*)script_pool.base) + line_number;
+	Line* line = ((Line*)script_pool.base) + line_number;
 	if (line_number * sizeof(Line) < script_pool.total_size)
-	{
-		return xline;
-	}
-	else
-	{
-		return NULL;
-	}
+		return line;
+	return NULL;
 }
 
 void parse()
-{
-	Line* sline = parser_get_line(line_number);
+{ // each entry increments the line number
+	Line* sline = parser_get_line(line_number++);
+	if (!sline)
+		return;
+
 	char* line = sline->line;
-	if (sline)
+	char* tkn = strtok(line, " ");
+	if (!tkn)
+		return;
+
+	if (strcmp(tkn, ">") == 0) // ">" prefaces dialog
+	{ // don't write "> " so start at i=2
+		write_line(&line[2]); 		return;
+	}
+
+	for (int i = 0; i < arr_size(keyword_name); i++)
 	{
-		line_number++;
+		if (strncmp(tkn, keyword_name[i], strlen(tkn)))
+			continue; // unrecognized command, skip line
 
-		char* tkn = strtok(line, " ");
-		if (tkn && strcmp(tkn, ">") == 0)
+		char* tkns[MAX_ARGS];
+		tkn = strtok(NULL, " ");
+
+		int argc = 0;
+		for (; tkn; ++argc)
 		{
-			write_line(&line[2]); // don't write "> " so start at i=2
-			return;
+			tkns[argc] = tkn;
+
+			char* nl = strchr(tkns[argc], '\n');
+			if (nl) // strip newline characters
+				*nl = 0; 
+
+			tkn = strtok(NULL, " ");
 		}
 
-		for (int i = 0; i < arr_size(keyword_name); i++)
-		{
-			if (tkn && strncmp(tkn, keyword_name[i], sizeof(tkn)) == 0)
-			{
-				char* tkns[MAX_ARGS];
-				tkn = strtok(NULL, " ");
+		funct[i](argc, tkns);
 
-				int argc = 0;
-				for (; tkn; ++argc)
-				{
-					tkns[argc] = tkn;
-
-					char* nl = strchr(tkns[argc], '\n');
-					if (nl) { *nl = 0; }
-
-					tkn = strtok(NULL, " ");
-				}
-
-				funct[i](argc, tkns);
-
-				// peak to see if this instruction syncs with next 
-				Line* next_line = parser_get_line(line_number);
-				if (strncmp(next_line->line, "sync", 4) == 0)
-				{
-					line_number++;
-					parse(); // execute next if it does
-				}
-				return;
-			}
+		// peak to see if this instruction syncs with next 
+		Line* next_line = parser_get_line(line_number);
+		if (strncmp(next_line->line, "sync", 4) == 0)
+		{ // to sync, force read next line instead of immediately processing this one
+			line_number++;
+			parse(); 
 		}
+		return;
 	}
 }
 
@@ -103,9 +99,7 @@ void set_bg(int argc, char** argv)
 	int width = game_state->window_width;
 	int height = game_state->window_height;
 	if (!game_state->scene->background)
-	{
 		game_state->scene->background = geometry_box_create(0.0, 0.0, width, height);
-	}
 
 	char path[256];
 	text_append(path, BG_PATH, argv[0]);
