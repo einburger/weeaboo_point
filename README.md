@@ -3,7 +3,8 @@
 
 This is a VN engine that reads from a movie-like script written in C.
 Trying to keep the script that generates the game as simple as possible.
-Existing commands:
+
+## Existing commands ##
 ```
 at [image]                       // loads a background
 place [character] [x pos]        // places a character at that x position
