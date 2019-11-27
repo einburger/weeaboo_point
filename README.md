@@ -3,6 +3,7 @@
 
 This is a VN engine that reads from a movie-like script written in C.
 Trying to keep the script that generates the game as simple as possible.
+Requires GLFW.
 
 ## Existing commands ##
 ```
