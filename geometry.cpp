@@ -195,7 +195,8 @@ char geometry_box_wait(double seconds)
 	return 1;
 }
 
-char geometry_box_fade(Box* box, float speed) {
+char geometry_box_fade(Box* box, float speed) 
+{
 	if (box->a < 1.0) {
 		box->a += 0.05;
 	} else {
