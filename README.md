@@ -1,7 +1,20 @@
 
 ### About ###
 
-* This is a VN engine that reads from a movie-like script.
+This is a VN engine that reads from a movie-like script written in C.
+Trying to keep the script that generates the game as simple as possible.
+Existing commands:
+```
+at [image]                       // loads a background
+place [character] [x pos]        // places a character at that x position
+fadein [character] [speed]       // fades in a character at that speed
+wait [character] [time in s]     // wait for s seconds
+move [character] [xpos] [speed]  // moves character to xpos (in % of screen width) at speed
+exit [character] (left|right)    // exits the character stage left or right
+sync                             // makes previous action run at the same time as the following on
+> [text]                         // write dialog
+
+```
 
 ## Example script ##
 ```
@@ -31,6 +44,12 @@ wait preppy 0.5
 > HUUAAH! Die mudcrab!
 
 move swimsuit 20 20
+
+> Hey!
+
+move swimsuit 150 15 
+sync
+move alice -350 20
 ```
 
 ## Result ##
