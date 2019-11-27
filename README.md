@@ -1,7 +1,7 @@
 
 ### About ###
 
-This is a VN engine that reads from a movie-like script written in C.
+This is a VN engine that reads from a movie-like script.
 Trying to keep the script that generates the game as simple as possible.
 Requires GLFW.
 
