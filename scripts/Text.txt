@@ -5,7 +5,7 @@ place preppy 50
 place swimsuit 50
 
 
-> * audible boob bounce *
+> *audible frustration*
 
 fadein preppy 0.05
 wait preppy 0.5
@@ -64,33 +64,20 @@ move preppy 20 20
 
 move swimsuit 80 20
 
-> ...cuz she's a whore lul
+> ...because of B O I S
 
 set preppy angry
 exit swimsuit right
 
-> WHAT?
 > Oh who am I kidding.
 
 move preppy -150 20
 set preppy bikini
 move preppy 20 20
 
-> She's right, see?
+> Look at this bikini.
 
 move preppy -250 20
-
-at grabby.png
-
-> And how about now?
-> *I still can't be sure, do you have more?*
-
-set preppy surprisedbikini
-move preppy 20 20
-
-> I rest my case.
-
-exit preppy left 
 
 at event_6.png
 
@@ -110,18 +97,18 @@ at event_4.png
 
 at event_1.png
 
-> ...get cucked virgin faggot!
-> *sexual car noises*
+> ...B O I S!
+> *car noises*
 
 at station_a.jpg
 move swimsuit 80 20
 
-> Even her car is whore-ish
+> Even her car is B O I S
 
 set preppy summer
 move preppy 20 20
 
-> Careful now... you're one too
+> Careful now...
 
 move swimsuit 150 20
 sync

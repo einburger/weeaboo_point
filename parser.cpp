@@ -4,24 +4,20 @@
 #include "text.h"
 
 #define KEYWORD_TABLE \
-X(at, "at", set_bg) \
-X(play, "play", play_song) \
-X(place, "place", place_character) \
-X(exit_stage, "exit", exit_character) \
-X(move, "move", move_character) \
-X(set, "set", set_emotion) \
-X(fadein, "fadein", fade_in) \
-X(wait, "wait", scene_wait) 
+X("at", set_bg) \
+X("play", play_song) \
+X("place", place_character) \
+X("exit", exit_character) \
+X("move", move_character) \
+X("set", set_emotion) \
+X("fadein", fade_in) \
+X("wait", scene_wait) 
 
-#define X(a, b, c) a,
-enum KEYWORD { KEYWORD_TABLE };
-#undef X
-
-#define X(a, b, c) b,
+#define X(a, b) a,
 const char* keyword_name[] = { KEYWORD_TABLE };
 #undef X
 
-#define X(a, b, c) c,
+#define X(a, b) b,
 void(*funct[])(int argc, char** argv) = { KEYWORD_TABLE };
 #undef X
 
@@ -127,6 +123,7 @@ void place_character(int argc, char** argv)
 		y_pos = game_state->window_height - ch->h;
 	geometry_box_position(ch, x_pos, y_pos);
 }
+
 
 void set_emotion(int argc, char** argv)
 {

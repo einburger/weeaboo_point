@@ -39,23 +39,6 @@ void text_init(const char* path, float sz)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-/*
-std::string text_justify(std::string& text, int max_count)
-{
-	std::string final_text;
-	int chrcnt = 0;
-	for (size_t i{}; i < text.size(); i++) {
-		chrcnt++;
-		if (chrcnt > max_count) {
-			final_text += "\n";
-			chrcnt = 0;
-		}
-		final_text += text[i];
-	}
-	return final_text;
-}
-*/
-
 void text_draw(const char* line)
 {
 	float xpos = game_state->scene->textbox->x_min + 180;

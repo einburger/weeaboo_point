@@ -36,7 +36,6 @@ void gamestate_mouse_button_callback(GLFWwindow* window, int button, int action,
 
 void gamestate_character_callback(GLFWwindow* window, unsigned int codepoint)
 {
-	/* add typing stuff */
 }
 
 void gamestate_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -58,40 +57,13 @@ void gamestate_key_callback(GLFWwindow* window, int key, int scancode, int actio
 
 void gamestate_savestate_update(int x, int y, int w, int h, int window_w, int window_h)
 {
-	save_state->box_pos_x = x;
-	save_state->box_pos_y = y;
-	save_state->box_width = w;
-	save_state->box_height = h;
-	save_state->window_width = window_w;
-	save_state->window_height = window_h;
 }
 
 void gamestate_savestate_save(SaveState* save_state)
 {
-	FILE* file_ptr = fopen("box_state.txt", "w");
-	fprintf(file_ptr, "%d %d %d %d %d %d %d",
-			save_state->box_pos_x, save_state->box_pos_y,
-			save_state->box_width, save_state->box_height,
-			save_state->window_width, save_state->window_height);
-	fclose(file_ptr);
 }
 
 
 void gamestate_savestate_load(SaveState* save_state)
 {
-	/*
-	std::fstream file;
-	file.open("box_state.txt");
-	if (!file.is_open())
-		std::cout << "uhoh\n";
-
-	while (file >> save_state->box_pos_x
-				>> save_state->box_pos_y
-				>> save_state->box_width
-				>> save_state->box_height
-				>> save_state->window_width
-				>> save_state->window_height) {}
-
-	file.close();
-	*/
 }
