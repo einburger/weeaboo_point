@@ -58,7 +58,8 @@ void parse()
 
 	if (strcmp(tkn, ">") == 0) // ">" prefaces dialog
 	{ // don't write "> " so start at i=2
-		write_line(&line[2]); 		return;
+		write_line(&line[2]); 		
+		return;
 	}
 
 	for (int i = 0; i < arr_size(keyword_name); i++)
