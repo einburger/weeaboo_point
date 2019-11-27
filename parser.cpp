@@ -65,7 +65,7 @@ void parse()
 	for (int i = 0; i < arr_size(keyword_name); i++)
 	{
 		if (strncmp(tkn, keyword_name[i], strlen(tkn)))
-			continue; // unrecognized command, skip line
+			continue; // keyword didn't match, try the next 
 
 		char* tkns[MAX_ARGS];
 		tkn = strtok(NULL, " ");
