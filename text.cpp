@@ -56,6 +56,25 @@ std::string text_justify(std::string& text, int max_count)
 }
 */
 
+void text_draw(const char* line)
+{
+	float xpos = game_state->scene->textbox->x_min + 180;
+	float ypos = game_state->scene->textbox->y_max - 68;
+
+	/* black text moved by 2 in each cardinal direction to create
+	 * to create a black text border */
+	text_render(line, xpos + 2, ypos + 2, BLACK);
+	text_render(line, xpos - 2, ypos - 2, BLACK);
+	text_render(line, xpos + 2, ypos - 2, BLACK);
+	text_render(line, xpos - 2, ypos + 2, BLACK);
+	text_render(line, xpos, ypos - 2, BLACK);
+	text_render(line, xpos, ypos + 2, BLACK);
+	text_render(line, xpos + 2, ypos, BLACK);
+	text_render(line, xpos - 2, ypos, BLACK);
+
+	text_render(line, xpos, ypos, WHITE);
+}
+
 void text_render(const char* text, float x, float y, int COLOR)
 {
 	glBindTexture(GL_TEXTURE_2D, ftex);
@@ -91,25 +110,6 @@ void text_render(const char* text, float x, float y, int COLOR)
 	}
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void text_draw(const char* line)
-{
-	float xpos = game_state->scene->textbox->x_min + 180;
-	float ypos = game_state->scene->textbox->y_max - 68;
-
-	/* black text moved by 2 in each cardinal direction to create
-	 * to create a black text border */
-	text_render(line, xpos + 2, ypos + 2, BLACK);
-	text_render(line, xpos - 2, ypos - 2, BLACK);
-	text_render(line, xpos + 2, ypos - 2, BLACK);
-	text_render(line, xpos - 2, ypos + 2, BLACK);
-	text_render(line, xpos, ypos - 2, BLACK);
-	text_render(line, xpos, ypos + 2, BLACK);
-	text_render(line, xpos + 2, ypos, BLACK);
-	text_render(line, xpos - 2, ypos, BLACK);
-
-	text_render(line, xpos, ypos, WHITE);
 }
 
 void text_append(char* destination, char* string_a, char* string_b)

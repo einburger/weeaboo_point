@@ -6,7 +6,7 @@
 #define KEYWORD_TABLE \
 X(at, "at", set_bg) \
 X(play, "play", play_song) \
-X(enter, "enter", place_character) \
+X(place, "place", place_character) \
 X(exit_stage, "exit", exit_character) \
 X(move, "move", move_character) \
 X(set, "set", set_emotion) \
@@ -127,26 +127,9 @@ void place_character(int argc, char** argv)
 {
 	Character* ch = scene_get_character(argv[0]);
 	ch->speed = 15;
-
-	int x_pos, y_pos = game_state->window_height - ch->h;
-	if (strcmp(argv[1], "left") == 0)
-	{
-		geometry_box_position(ch, 0.0 - ch->w, y_pos);
-		ch->target_pos = game_state->window_width * 0.12;
-		eventhandler_event_create(MOVE, ch);
-	}
-	else if (strcmp(argv[1], "center") == 0)
-	{
-		x_pos = (game_state->window_width / 2) - (ch->w / 2);
-		geometry_box_position(ch, x_pos, y_pos);
-	}
-	else if (strcmp(argv[1], "right") == 0)
-	{
-		x_pos = game_state->window_width + ch->w;
-		geometry_box_position(ch, x_pos, y_pos);
-		ch->target_pos = game_state->window_width * 0.62;
-		eventhandler_event_create(MOVE, ch);
-	}
+	int x_pos = (((float)atoi(argv[1]) / 100.0) * game_state->window_width) - (ch->w/2), 
+		y_pos = game_state->window_height - ch->h;
+	geometry_box_position(ch, x_pos, y_pos);
 }
 
 void set_emotion(int argc, char** argv)
@@ -178,7 +161,7 @@ void move_character(int argc, char** argv)
 void fade_in(int argc, char** argv)
 {
 	Character* ch = scene_get_character(argv[0]);
-	// ch->speed = (float)atof(argv[1]);
+	ch->fade_speed = (float)atof(argv[1]);
 	eventhandler_event_create(FADE, ch);
 }
 

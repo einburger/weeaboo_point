@@ -8,7 +8,7 @@ typedef struct Event
 	union
 	{
 		char(*move_ptr)(Box*, int, int, int);
-		char(*fade_ptr)(Box*, double);
+		char(*fade_ptr)(Box*, float);
 		char(*wait_ptr)(double);
 		void(*write_ptr)(const char*);
 		void(*parse_ptr)();

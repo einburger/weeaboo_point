@@ -31,6 +31,7 @@ typedef struct Box
 	float	a;
 	float	wait_time;
 	float	speed;
+	float   fade_speed;
 	Sprite	sprite;
 } Box, Character;
 

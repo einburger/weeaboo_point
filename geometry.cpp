@@ -27,6 +27,7 @@ Character* character_create(MemoryPool* pool, int x, int y, int w, int h)
 	ch->a = 1.0;
 	ch->wait_time = 0.0;
 	ch->speed = 20.0;
+	ch->fade_speed = 0.05;
 
 	return ch;
 }
@@ -209,7 +210,11 @@ char geometry_box_fade(Box* box, float speed)
 {
 	if (box->a < 1.0)
 	{
-		box->a += 0.05;
+		box->a += speed;
+		if (box->a > 1.0)
+		{
+			return 0;
+		}
 	}
 	else
 	{

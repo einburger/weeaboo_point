@@ -31,6 +31,18 @@ Scene* scene_create(const char* scene_script)
 	scene->background = geometry_box_create(0, 0, game_state->window_width, game_state->window_height);
 	geometry_box_ID(scene->background, "bg");
 
+	char pathx[MAX_PATH];
+	text_append(pathx, TEXTBOX_BG_PATH, "Untitled1.png");
+	scene->continue_arrow = geometry_box_create(game_state->window_width * 0.70, 
+												game_state->window_height * 0.91, 
+												5, 
+												5);
+	geometry_box_texture(scene->continue_arrow, pathx);
+	geometry_box_ID(scene->continue_arrow, "arrow");
+	geometry_box_size(scene->continue_arrow, 
+					  scene->continue_arrow->sprite.w * 0.2, 
+					  scene->continue_arrow->sprite.h * 0.2);
+
 	// set up memory pool for the script
 	script_pool.base = memory_pool.base + memory_pool.used_size;
 	script_pool.total_size = sizeof(char) * 10'000'000;
@@ -76,8 +88,17 @@ void scene_draw()
 		geometry_box_draw(current);
 	}
 
+
 	geometry_box_draw(game_state->scene->textbox);
+
 	text_draw(game_state->scene->dialog);
+
+	Box* arrow = game_state->scene->continue_arrow;
+	geometry_box_position(game_state->scene->continue_arrow,
+						  game_state->window_width * 0.60 + 5 * sin(clock() * 0.009),
+						  arrow->y_min);
+	if (game_state->waiting_for_input)
+		geometry_box_draw(game_state->scene->continue_arrow);
 }
 
 size_t scene_file_count()

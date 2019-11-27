@@ -13,6 +13,7 @@ typedef struct Scene
 {
 	Box* background;
 	Box* textbox;
+	Box* continue_arrow;
 	char dialog[1024];
 } Scene;
 

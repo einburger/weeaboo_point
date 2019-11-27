@@ -42,7 +42,7 @@ void eventhandler_event_handle()
 {
 	Event* event = NULL;
 	if (event_stack.used_size == 0)
-	{
+	{ // process the next line if no events to handle
 		eventhandler_event_create(PARSE, NULL);
 		event = GET_END(&event_stack, Event);
 	}
@@ -61,7 +61,7 @@ void eventhandler_event_handle()
 			}
 			break;
 		case FADE:
-			if (!event_fade(ch, ch->speed))
+			if (!event_fade(ch, ch->fade_speed))
 			{
 				move_to_end_and_remove(event);
 			}

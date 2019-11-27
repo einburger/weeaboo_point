@@ -1,23 +1,26 @@
 at station_a.jpg
 
+place alice 50
+place preppy 50
+place swimsuit 50
+
+
 > * audible boob bounce *
 
-enter preppy center 
 fadein preppy 0.05
+wait preppy 0.5
 
-> Hey, I'm preppy!
+> Hello.
 
-enter swimsuit center
+move preppy 20 5
+sync
+move swimsuit 53 5
 sync
 fadein swimsuit 0.05
 sync
-move preppy 20 10
-sync
-enter alice center
-sync
-fadein alice 0
-sync
-move swimsuit 53 10
+fadein alice 0.02 
+
+wait preppy 0.5 
 
 > HUUAAH! Die mudcrab!
 
@@ -55,11 +58,11 @@ at love_two.png
 > *this is my life now*
 
 at station_a.jpg
-enter preppy left 20
+move preppy 20 20
 
 > Why, you ask?
 
-enter swimsuit right 20
+move swimsuit 80 20
 
 > ...cuz she's a whore lul
 
@@ -71,20 +74,19 @@ exit swimsuit right
 
 move preppy -150 20
 set preppy bikini
-enter preppy left 20
+move preppy 20 20
 
 > She's right, see?
 
-exit preppy left 
+move preppy -250 20
 
 at grabby.png
 
 > And how about now?
 > *I still can't be sure, do you have more?*
 
-move preppy -150 20
 set preppy surprisedbikini
-enter preppy left 20
+move preppy 20 20
 
 > I rest my case.
 
@@ -112,18 +114,18 @@ at event_1.png
 > *sexual car noises*
 
 at station_a.jpg
-enter swimsuit right 20
+move swimsuit 80 20
 
 > Even her car is whore-ish
 
 set preppy summer
-enter preppy left 20
+move preppy 20 20
 
 > Careful now... you're one too
 
 move swimsuit 150 20
 sync
-move preppy 150 10
+exit preppy right
 
 wait preppy 0.5
 
