@@ -16,12 +16,12 @@ typedef struct Event
 	} u;
 } Event;
 
-#define event_move event->u.move_ptr
-#define event_fade event->u.fade_ptr
-#define event_wait event->u.wait_ptr
-#define event_write event->u.write_ptr
-#define event_parse event->u.parse_ptr
-#define event_input event->u.input_ptr
+#define EVENT_MOVE event->u.move_ptr
+#define EVENT_FADE event->u.fade_ptr
+#define EVENT_WAIT event->u.wait_ptr
+#define EVENT_WRITE event->u.write_ptr
+#define EVENT_PARSE event->u.parse_ptr
+#define EVENT_INPUT event->u.input_ptr
 
 void eventhandler_event_create(int ID, void* obj);
 void eventhandler_event_handle();

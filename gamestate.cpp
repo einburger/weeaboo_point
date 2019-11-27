@@ -40,17 +40,15 @@ void gamestate_character_callback(GLFWwindow* window, unsigned int codepoint)
 
 void gamestate_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (game_state->waiting_for_input)
+	if (!game_state->waiting_for_input)
+		return;
+	if (key == GLFW_KEY_Z || key == GLFW_KEY_SPACE || key == GLFW_KEY_TAB)
 	{
-		if (key == GLFW_KEY_Z || key == GLFW_KEY_SPACE || key == GLFW_KEY_TAB)
+		if (action == GLFW_PRESS)
 		{
-			if (action == GLFW_PRESS)
-			{
-				game_state->waiting_for_input = 0;
-				clear_pool(&event_stack);
-				// POP_OBJECT(&event_stack, Event);
-				game_state->text_cursor_pos = 0;
-			}
+			game_state->waiting_for_input = 0;
+			game_state->text_cursor_pos = 0;
+			clear_pool(&event_stack);
 		}
 	}
 }

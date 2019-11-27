@@ -16,22 +16,22 @@ void eventhandler_event_create(int ID, void* obj)
 	switch (ID)
 	{
 	case MOVE:
-		event_move = geometry_box_move;
+		EVENT_MOVE = geometry_box_move;
 		break;
 	case WAIT:
-		event_wait = geometry_box_wait;
+		EVENT_WAIT = geometry_box_wait;
 		break;
 	case FADE:
-		event_fade = geometry_box_fade;
+		EVENT_FADE = geometry_box_fade;
 		break;
 	case PARSE:
-		event_parse = parse;
+		EVENT_PARSE = parse;
 		break;
 	case WRITE:
-		event_write = text_draw;
+		EVENT_WRITE = text_draw;
 		break;
 	case GET_INPUT:
-		event_input = scene_get_input;
+		EVENT_INPUT = scene_get_input;
 	default:
 		break;
 	}
@@ -55,32 +55,26 @@ void eventhandler_event_handle()
 		switch (event->ID)
 		{
 		case MOVE:
-			if (!event_move(ch, ch->target_pos, ch->y_min, ch->speed))
-			{
+			if (!EVENT_MOVE(ch, ch->target_pos, ch->y_min, ch->speed))
 				move_to_end_and_remove(event);
-			}
 			break;
 		case FADE:
-			if (!event_fade(ch, ch->fade_speed))
-			{
+			if (!EVENT_FADE(ch, ch->fade_speed))
 				move_to_end_and_remove(event);
-			}
 			break;
 		case WAIT:
-			if (!event_wait(ch->wait_time))
-			{
+			if (!EVENT_WAIT(ch->wait_time))
 				move_to_end_and_remove(event);
-			}
 			break;
 		case PARSE:
 			POP_OBJECT(&event_stack, Event);
-			event_parse();
+			EVENT_PARSE();
 			break;
 		case WRITE:
 			if (game_state->text_cursor_pos < strlen((const char*)event->obj))
 			{
 				game_state->text_cursor_pos++;
-				event_write((const char*)event->obj);
+				EVENT_WRITE((const char*)event->obj);
 			}
 			else
 			{ // line was written, so wait for input after line is written
@@ -89,7 +83,7 @@ void eventhandler_event_handle()
 			}
 			break;
 		case GET_INPUT:
-			event_input();
+			EVENT_INPUT();
 			break;
 		}
 	}
