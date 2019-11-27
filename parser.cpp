@@ -154,7 +154,7 @@ void move_character(int argc, char** argv)
 void fade_in(int argc, char** argv)
 {
 	Character* ch = scene_get_character(argv[0]);
-	ch->fade_speed = (float)atof(argv[1]);
+	ch->fade_speed = atof(argv[1]);
 	eventhandler_event_create(FADE, ch);
 }
 
