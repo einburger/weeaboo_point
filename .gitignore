@@ -1,0 +1,11 @@
+*.tlog
+*.vcxproj
+devildoctor.vcxproj.filters
+ReadMe.txt
+targetver.h
+Release/devildoctor.res
+*.rc
+*.user
+x64/
+Release/
+Debug/
