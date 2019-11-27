@@ -33,11 +33,7 @@ void read_file()
 	while (1)
 	{
 		Line* sline = PUSH_OBJECT(&script_pool, Line);
-		if (fgets(sline->line, sizeof(sline->line), game_state->current_file))
-		{
-			// printf("%s", sline->line);
-		}
-		else
+		if (!fgets(sline->line, sizeof(sline->line), game_state->current_file))
 		{
 			POP_OBJECT(&script_pool, Line);
 			break;
