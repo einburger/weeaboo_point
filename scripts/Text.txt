@@ -1,0 +1,132 @@
+at station_a.jpg
+
+> * audible boob bounce *
+
+enter preppy center 
+fadein preppy 0.05
+
+> Hey, I'm preppy!
+
+enter swimsuit center
+sync
+fadein swimsuit 0.05
+sync
+move preppy 20 10
+sync
+enter alice center
+sync
+fadein alice 0
+sync
+move swimsuit 53 10
+
+> HUUAAH! Die mudcrab!
+
+move swimsuit 20 20
+
+> Hey!
+
+move swimsuit 150 15 
+sync
+move alice -350 20
+
+> I am preppy!
+> I'm just a girl.
+> A very... 
+
+set preppy closeup
+
+> ...lonely girl
+> ...
+> *you can tell by the way she looks*
+
+set preppy sad 
+wait preppy 0.8
+move preppy -150 10
+
+at love_one.png
+
+> I've had my flings...
+> *please stop the elipses*
+
+at love_two.png
+
+> ...my slobbering love affairs
+> ...but they usually don't last.
+> *this is my life now*
+
+at station_a.jpg
+enter preppy left 20
+
+> Why, you ask?
+
+enter swimsuit right 20
+
+> ...cuz she's a whore lul
+
+set preppy angry
+exit swimsuit right
+
+> WHAT?
+> Oh who am I kidding.
+
+move preppy -150 20
+set preppy bikini
+enter preppy left 20
+
+> She's right, see?
+
+exit preppy left 
+
+at grabby.png
+
+> And how about now?
+> *I still can't be sure, do you have more?*
+
+move preppy -150 20
+set preppy surprisedbikini
+enter preppy left 20
+
+> I rest my case.
+
+exit preppy left 
+
+at event_6.png
+
+> I-I-I have something...
+
+at event_5.png
+
+> I want t-to say 
+
+at event_3.png
+
+> to you...
+
+at event_4.png
+
+> ...
+
+at event_1.png
+
+> ...get cucked virgin faggot!
+> *sexual car noises*
+
+at station_a.jpg
+enter swimsuit right 20
+
+> Even her car is whore-ish
+
+set preppy summer
+enter preppy left 20
+
+> Careful now... you're one too
+
+move swimsuit 150 20
+sync
+move preppy 150 10
+
+wait preppy 0.5
+
+move swimsuit -100 20
+sync
+move preppy -100 10
