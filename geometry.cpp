@@ -267,3 +267,55 @@ void geometry_box_on_click(Box* box)
 		box->clicked = 0;
 	}
 }
+
+void draw_debug_box(float x, float r, float g, float b)
+{
+	glBegin(GL_QUADS);
+	{
+		glColor4f(r, g, b, 1.0f);
+
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(x, 0);
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(x + 10, 0);
+
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(x + 10, 10);
+
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(x, 10);
+	}
+	glEnd();
+}
+
+void geometry_draw_event_stack()
+{
+	Event* event = NULL;
+	for (size_t i = 0; i * sizeof(Event) < event_stack.used_size; ++i)
+	{
+		event = ((Event*)event_stack.base) + i;
+		switch (event->ID)
+		{
+		case MOVE:
+			draw_debug_box(i*10, 1.0, 0.0, 0.0); // red
+			break;
+		case FADE:
+			draw_debug_box(i*10, 1.0, 0.0, 1.0);
+			break;
+		case WAIT:
+			draw_debug_box(i*10, 0.0, 1.0, 1.0);
+			break;
+		case PARSE:
+			draw_debug_box(i*10, 0.0, 1.0, 0.0); // green
+			break;
+		case WRITE:
+			draw_debug_box(i*10, 0.0, 0.0, 1.0);  // blue
+			break;
+		case GET_INPUT:
+			draw_debug_box(i*10, 1.0, 1.0, 1.0); // white
+			break;
+		}
+	}
+	
+}

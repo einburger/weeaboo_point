@@ -35,9 +35,7 @@ int main(int argc, char** argv)
 
 	allocate_pool(&memory_pool, 500'000'000);
 
-	char path[256];
-	text_append(path, SCRIPT_PATH, "Text.txt");
-	game_state->scene = scene_create(path);
+	game_state->scene = scene_create(CONCAT(SCRIPT_PATH, "Text.txt"));
 
 	game_state->dt = 0.001;
 	eventhandler_event_create(PARSE, NULL);

@@ -100,3 +100,33 @@ void text_append(char* destination, char* string_a, char* string_b)
 	strcpy(destination, string_a);
 	strcat(destination, string_b);
 }
+
+char text_write_animation(const char* text)
+{
+	static clock_t start, stop;
+	static char init_time = 0;
+	if (game_state->text_cursor_pos > strlen(text))
+	{
+		return 0;
+	}
+
+	if (!init_time)
+	{
+		start = clock();
+		init_time = 1;
+	}
+	else
+	{
+		stop = clock() - start;
+		double elapsed_time = (double)stop / CLOCKS_PER_SEC;
+
+		if (elapsed_time > 0.05f)
+		{
+			text_draw(text);
+			init_time = 0;
+			stop = start;
+			game_state->text_cursor_pos++;
+		}
+	}
+	return 1;
+}

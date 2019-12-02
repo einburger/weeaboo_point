@@ -7,7 +7,7 @@ typedef struct Event
 	void* obj;
 } Event;
 
-void eventhandler_event_create(int ID, void* obj);
+Event* eventhandler_event_create(int ID, void* obj);
 void eventhandler_event_handle();
 
 /* Once an even is handled, swap the end of the stack with it,

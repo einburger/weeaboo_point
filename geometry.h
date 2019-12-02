@@ -58,3 +58,5 @@ char geometry_box_fade(Box* box, float speed);
 // collisions
 static char geometry_box_check_collision(Box*);
 void		geometry_box_on_click(Box*);
+
+void geometry_draw_event_stack();

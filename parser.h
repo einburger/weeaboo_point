@@ -10,7 +10,7 @@ typedef struct Line
 
 static size_t line_number = 0;
 
-void parse();
+char parse();
 void read_file();
 void set_bg(int argc, char** argv);
 void play_song(int argc, char** argv);

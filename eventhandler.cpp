@@ -7,21 +7,18 @@
 #include "geometry.h"
 #include "memorypool.h"
 
-void eventhandler_event_create(int ID, void* obj)
+Event* eventhandler_event_create(int ID, void* obj)
 {
 	Event* event = PUSH_OBJECT(&event_stack, Event);
 	event->ID = ID;
 	event->obj = obj;
+	return event;
 }
 
 void eventhandler_event_handle()
 {
-	Event* event = NULL;
-	if (event_stack.used_size == 0)
-	{ // process the next line if no events to handle
-		eventhandler_event_create(PARSE, NULL);
-		event = GET_END(&event_stack, Event);
-	}
+	Event* event = NULL; // no events to handle, so read next line
+	if (event_stack.used_size == 0) { event = eventhandler_event_create(PARSE, NULL); }
 
 	for (size_t i = 0; i * sizeof(Event) < event_stack.used_size; ++i)
 	{
@@ -43,18 +40,13 @@ void eventhandler_event_handle()
 				move_to_end_and_remove(event);
 			break;
 		case PARSE:
-			POP_OBJECT(&event_stack, Event);
-			parse();
+			if (!parse())
+				move_to_end_and_remove(event);
 			break;
 		case WRITE:
-			if (game_state->text_cursor_pos < strlen((const char*)event->obj))
-			{
-				game_state->text_cursor_pos++;
-				text_draw((const char*)event->obj);
-			}
-			else
-			{ // line was written, so wait for input after line is written
-				POP_OBJECT(&event_stack, Event);
+			if (!text_write_animation((const char*)event->obj))
+			{ // wait for input after line is written
+				move_to_end_and_remove(event);
 				eventhandler_event_create(GET_INPUT, NULL);
 			}
 			break;

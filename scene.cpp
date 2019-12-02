@@ -19,10 +19,7 @@ Scene* scene_create(const char* scene_script)
 	scene->textbox->a = 0.7;
 	geometry_box_ID(scene->textbox, "textbox");
 	geometry_box_color(scene->textbox, 1.0, 1.0, 1.0, 0.7);
-
-	char path[MAX_PATH];
-	text_append(path, TEXTBOX_BG_PATH, "ptext.png");
-	geometry_box_texture(scene->textbox, path);
+	geometry_box_texture(scene->textbox, CONCAT(TEXTBOX_BG_PATH, "ptext.png"));
 	geometry_box_size(scene->textbox, 
 					  scene->textbox->sprite.w, 
 					  scene->textbox->sprite.h);
@@ -31,13 +28,10 @@ Scene* scene_create(const char* scene_script)
 	scene->background = geometry_box_create(0, 0, game_state->window_width, game_state->window_height);
 	geometry_box_ID(scene->background, "bg");
 
-	char pathx[MAX_PATH];
-	text_append(pathx, TEXTBOX_BG_PATH, "Untitled1.png");
 	scene->continue_arrow = geometry_box_create(game_state->window_width * 0.70, 
 												game_state->window_height * 0.91, 
-												5, 
-												5);
-	geometry_box_texture(scene->continue_arrow, pathx);
+												5, 5);
+	geometry_box_texture(scene->continue_arrow, CONCAT(TEXTBOX_BG_PATH, "Untitled1.png"));
 	geometry_box_ID(scene->continue_arrow, "arrow");
 	geometry_box_size(scene->continue_arrow, 
 					  scene->continue_arrow->sprite.w * 0.2, 
@@ -99,6 +93,8 @@ void scene_draw()
 						  arrow->y_min);
 	if (game_state->waiting_for_input)
 		geometry_box_draw(game_state->scene->continue_arrow);
+
+	geometry_draw_event_stack();
 }
 
 size_t scene_file_count()
@@ -133,7 +129,7 @@ Character* scene_get_character(const char* name)
 	for (size_t i = 0; i * sizeof(Character) < character_pool.used_size; ++i)
 	{
 		Character* current = ((Character*)(character_pool.base)) + i;
-		if (strcmp(name, current->name) == 0)
+		if (strncmp(name, current->name, strlen(name)) == 0)
 		{
 			return current;
 		}
@@ -142,7 +138,7 @@ Character* scene_get_character(const char* name)
 	Character* character = character_create(&character_pool, 0, 0, 0, 0);
 	strcpy(character->name, name);
 
-	static char path[1024];
+	static char path[128];
 	text_append(path, CHARACTER_PATH, name);
 	strcat(strcat(strcat(path, "/"), name), ".png");
 	geometry_box_texture(character, path);

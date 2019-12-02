@@ -45,7 +45,7 @@ Line* parser_get_line(size_t line_number)
 	return NULL;
 }
 
-void parse()
+char parse()
 { // each entry increments the line number
 	Line* sline = parser_get_line(line_number++);
 	if (!sline)
@@ -59,7 +59,7 @@ void parse()
 	if (strcmp(tkn, ">") == 0) // ">" prefaces dialog
 	{ // don't write "> " so start at i=2
 		write_line(&line[2]); 		
-		return;
+		return 0;
 	}
 
 	for (int i = 0; i < arr_size(keyword_name); i++)
@@ -89,9 +89,10 @@ void parse()
 		if (strncmp(next_line->line, "sync", 4) == 0)
 		{ // to sync, force read next line instead of immediately processing this one
 			line_number++;
-			parse(); 
+			return 1;
 		}
-		return;
+
+		return 0;
 	}
 }
 
@@ -118,7 +119,6 @@ void place_character(int argc, char** argv)
 		y_pos = game_state->window_height - ch->h;
 	geometry_box_position(ch, x_pos, y_pos);
 }
-
 
 void set_emotion(int argc, char** argv)
 {
@@ -162,7 +162,7 @@ void scene_wait(int argc, char** argv)
 
 void write_line(const char* line)
 {
-	eventhandler_event_create(WRITE, line);
 	strcpy(game_state->scene->dialog, line);
+	eventhandler_event_create(WRITE, line);
 }
 

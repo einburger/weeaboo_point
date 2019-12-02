@@ -1,16 +1,17 @@
 at station_a.jpg
 
+> *audible frustration*
+> Hello.
+> Boy.
+> Man?
+
 place alice 50
 place preppy 50
 place swimsuit 50
 
-
-> *audible frustration*
-
 fadein preppy 0.05
 wait preppy 0.5
 
-> Hello.
 
 move preppy 20 5
 sync

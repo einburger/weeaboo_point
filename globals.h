@@ -10,6 +10,8 @@
 #define SCRIPT_PATH "scripts/"
 #define TEXTBOX_BG_PATH "textbox_bg/"
 
+#define CONCAT(a, b) a ## b
+
 #define ERROR_REPORT \
 printf("ERROR:\n    line: %d \n    file: %s\n", __LINE__, __FILE__); \
 exit(EXIT_FAILURE);
