@@ -31,17 +31,9 @@ extern std::unique_ptr<SceneStateStack> scene_states;
 
 #define arr_size(a) sizeof(a) / sizeof(&a[0])
 
-const std::string BG_PATH = "../backgrounds/";
-// const std::string CHARACTER_PATH = "../characters/";
 const std::string FONT_PATH = "../fonts/";
 const std::string SCRIPT_PATH = "../scripts/";
 const std::string TEXTBOX_BG_PATH = "../textbox_bg/";
-
-//const std::filesystem::path BG_PATH = "../backgrounds";
-const std::filesystem::path CHARACTER_PATH = "../characters";
-// const std::filesystem::path FONT_PATH = "../fonts";
-// const std::filesystem::path SCRIPT_PATH = "../scripts";
-// const std::filesystem::path TEXTBOX_BG_PATH = "../textbox_bg";
 
 enum COLOR
 {

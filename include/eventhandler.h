@@ -83,10 +83,10 @@ struct EventHandler {
         events.emplace_back(event);
     }
 
-    void process() {
+    void process(SceneStateStack *st) {
         events.remove_if([](const auto& event) {
                 return !event->on_going();
-                });
+        });
 
         if (events.empty()) {
             push_back(new Event<ParseEvent>);

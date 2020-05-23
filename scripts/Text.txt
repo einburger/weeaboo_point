@@ -1,4 +1,4 @@
-at BG011.png
+at BG011
 
 > 
 
@@ -62,7 +62,7 @@ set sunohara cgsh23
 fadeout sunohara 0.05 sync
 move sunohara 0 5
 
-at BG017.png
+at BG017
 
 > * First period is about to start *
 
@@ -74,7 +74,7 @@ fadein sunohara 0.05
 fadeout sunohara 0.05 sync
 move sunohara -10 5
 
-at BG009N2.png
+at BG009N2
 
 > * It's 2 AM and suddenly...*
 > * CRAAASH *

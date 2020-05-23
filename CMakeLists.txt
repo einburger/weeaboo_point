@@ -7,9 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_LIBRARY_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-# add_compile_options(-Wfatal-errors)
-# add_compile_options(-O3)
+add_compile_options(-Wfatal-errors)
+add_compile_options(-O3)
 # add_compile_options(-Wpedantic)
+add_compile_options(-fpermissive)
 
 
 if (MSVC_IDE)
@@ -34,6 +35,7 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/src/parser.cpp
 	${PROJECT_SOURCE_DIR}/src/scene.cpp
 	${PROJECT_SOURCE_DIR}/src/text.cpp
+        ${PROJECT_SOURCE_DIR}/src/fileloader.cpp
 
 	${PROJECT_SOURCE_DIR}/src/imgui.cpp
 	${PROJECT_SOURCE_DIR}/src/imgui_demo.cpp
@@ -50,6 +52,7 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/include/parser.h
 	${PROJECT_SOURCE_DIR}/include/scene.h
 	${PROJECT_SOURCE_DIR}/include/text.h
+        ${PROJECT_SOURCE_DIR}/include/fileloader.h
 	)
 
 target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/include)

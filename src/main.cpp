@@ -7,6 +7,7 @@
 #include <string>
 
 #include "globals.h" // PATHS
+#include "fileloader.h"
 
 std::unique_ptr<GameState>    game_state(new GameState());
 std::unique_ptr<CursorState>  cursor(new CursorState());
@@ -14,6 +15,7 @@ std::unique_ptr<EventHandler> event_handler(new EventHandler());
 std::unique_ptr<SceneStateStack> scene_states(new SceneStateStack);
 
 size_t line_number = 0;
+size_t target_line = 0;
 
 #include "scene.h" // scene_create
 
@@ -49,6 +51,7 @@ int main()
         ImGui_ImplOpenGL2_Init();
 
 	std::string path = SCRIPT_PATH + std::string{"Text.txt"};
+
 	game_state->scene = Scene(path);
 
 	game_state->dt = 0.001;
@@ -65,7 +68,9 @@ int main()
 	glOrtho(0.0f, game_state->window_width, game_state->window_height, 0.0f, 0.0f, 1.0f);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
+        fileloader::load_images();
+        // target_line= game_state->scene.script.size()-1;
+        target_line= 2;
 	while (!glfwWindowShouldClose(game_state->current_window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -80,8 +85,15 @@ int main()
                 {
                     ImGui::Begin("Editor");
 
-                    ImGui::Text("Avg fps %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
-                                                                        ImGui::GetIO().Framerate);
+                    // ImGui::Text("Avg fps %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+                    //  if (ImGui::Button("Save Changes")) {
+                    //      scene_states->update_state(line_number);
+                    //  }
+
+                    auto &scene = game_state->scene;
+                    ImGui::SliderScalar("Background", ImGuiDataType_U32, &scene.background.sprite.texture, 
+                                        &scene.background.low_index, &scene.background.high_index, "");
+
                     ImGui::Separator();
 
                     if (ImGui::TreeNode("Characters")) {
@@ -89,12 +101,12 @@ int main()
                         for (auto &ch : game_state->scene.characters) {
                             if (ImGui::TreeNode(ch.name.c_str())) {
 
-                                ImGui::SliderInt("X-Pos", &ch.min_xy[0], -ch.w_h[0], game_state->window_width);
+                                ImGui::SliderScalar("Sprite", ImGuiDataType_U32, &ch.sprite.texture, &ch.low_index, &ch.high_index, "");
+                                ImGui::SliderInt("X-Pos", &ch.min_xy[0], -ch.w_h[0], game_state->window_width, "");
+                                ImGui::SliderInt("Y-Pos", &ch.min_xy[1], game_state->window_height, -ch.w_h[1], "");
+                                ImGui::ColorEdit4("Color", ch.rgba.data());
+
                                 ch.set_position(ch.min_xy);
-
-                                // int xx = new_x;
-
-                                ImGui::SliderFloat("Alpha", &ch.rgba[3], 0.0f, 1.0f);
 
                                 ImGui::TreePop();
                             }
@@ -108,24 +120,49 @@ int main()
                     int width = ImGui::GetWindowWidth();
                     for (int i{}; i < line_number; ++i) {
                         if (ImGui::Button(game_state->scene.script[i].c_str(), ImVec2(width, 20))) {
+                                //line_number = 0;
+                                //target_line = i;
+                                // while (!event_handler->events.empty())
+			        //     event_handler->process(scene_states.get());
                                 event_handler->events.clear();
-                                scene_states->revert_state(i);
+                                scene_states->revert_state(i+1);
+                                game_state->text_cursor_pos = game_state->scene.dialog.size();
+                                game_state->waiting_for_input = true;
                         }
                     }
                     ImGui::EndChild();
+
                     ImGui::End();
                 }
+
+                ImGui::Begin("State Stack");
+                    if (ImGui::TreeNode("States")) {
+
+                        for (int i{}; i < scene_states->states.size(); ++i) {
+                            std::string label = "state " + std::to_string(i);
+                            if (ImGui::TreeNode(label.c_str())) {
+                                for (auto ch : scene_states->states[i].characters) {
+                                    ImGui::Text(ch.to_string().c_str());
+                                }
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+
+                ImGui::End();
                 
                 ImGui::Render();
 
 		game_state->scene.draw();
 
 		if (!game_state->waiting_for_input)
-			event_handler->process();
+			event_handler->process(scene_states.get());
 
-		glFlush();
 
                 ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
+		glFlush();
 
 		glfwSwapBuffers(game_state->current_window);
 		glfwPollEvents();

@@ -1,13 +1,10 @@
-
-#ifndef SCENE_H
-#define SCENE_H
-
 #include <vector>
 #include <string>
 
+#ifndef SAVESTATE_H
+#define SAVESTATE_H
+
 #include "geometry.h"
-// #include "globals.h"
-// #include "gamestate.h"
 
 struct SceneSaveState 
 {
@@ -22,8 +19,17 @@ struct SceneStateStack
 {
     std::vector<SceneSaveState> states;
     void update_state();
+    void update_state(int i);
     void revert_state(size_t line_num);
 };
+
+#endif
+
+
+#ifndef SCENE_H
+#define SCENE_H
+
+#include "geometry.h"
 
 struct Scene
 {
@@ -46,13 +52,5 @@ struct Scene
 	}
 	void draw();
 };
-
-// #endif 
-// 
-// // new header
-// 
-// #ifndef SAVESTATE_H
-// #define SAVESTATE_H
-
 
 #endif 

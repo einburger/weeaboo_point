@@ -1,9 +1,0 @@
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/CMakeFiles/WeeabooPoint.dir
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/CMakeFiles/INSTALL.dir
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/CMakeFiles/ALL_BUILD.dir
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/CMakeFiles/ZERO_CHECK.dir
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/lib/glfw/CMakeFiles/uninstall.dir
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/lib/glfw/CMakeFiles/INSTALL.dir
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/lib/glfw/CMakeFiles/ALL_BUILD.dir
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/lib/glfw/src/CMakeFiles/glfw.dir
-C:/Users/ctobi/Programming/Projects/weeaboo_point/bin/lib/glfw/src/CMakeFiles/INSTALL.dir

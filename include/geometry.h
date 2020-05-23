@@ -7,6 +7,7 @@
 
 typedef unsigned char uchar;
 
+// Array overlaods
 namespace detail {
 
     template<typename U, typename V, std::size_t... I, typename Op>
@@ -114,20 +115,14 @@ auto& operator/=(std::array<T, N>& lhs, const U& scale) {
 }
 
 
-
-struct Sprite
-{
+struct Sprite {
 	unsigned int texture{};
 	std::array<int, 2> w_h{};
 };
 
-
 struct Box
 {
 	std::string name{};
-
-	bool clicked{false};
-	std::array<int, 2> clicked_x_y{};
 
 	std::array<int, 2> min_xy{};
 	std::array<int, 2> max_xy{};
@@ -139,9 +134,10 @@ struct Box
 	float speed{5.0f};
 	float fade_speed{0.05f};
 	int target_pos{};
+        unsigned int low_index{100'000}, high_index{0};
 
 	Sprite sprite;
-	std::unordered_map<std::string, std::string> emotion_map; // should be in a different class
+	std::unordered_map<std::string, Sprite> map; // should be in a different class
 
 	Box() = default;
 
@@ -163,7 +159,8 @@ struct Box
 	void scale();
 
 	void set_texture(const std::string &file_name);
-	void set_emotion(const std::string &emotion);
+	Sprite load_texture(const std::string &file_name);
+	// void set_emotion(const std::string &emotion);
 
 	void draw();
 
@@ -172,15 +169,13 @@ struct Box
 	bool wait(const double seconds);
 	bool fade(const float speed);
 
-        std::string print() {
-            return  "alpha: " + std::to_string(rgba[3])  + " " + 
-                    + "x_pos: " + std::to_string(min_xy[0]);
+        std::string to_string() {
+            return name + " xpos " + std::to_string(min_xy[0]) + " alpha " + std::to_string(rgba[3]);
         }
 };
 
 using Character = Box;
 
-
-
 void geometry_line_draw(int x0, int y0, int x1, int y1);
+
 

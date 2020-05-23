@@ -6,32 +6,32 @@
 #include "globals.h"
 #include "geometry.h"
 
-void Box::set_texture(const std::string &file_name)
-{
-	uchar* img = stbi_load(file_name.c_str(), &sprite.w_h[0], &sprite.w_h[1], 0, 4); 
 
-	glGenTextures(1, &sprite.texture);
-	glBindTexture(GL_TEXTURE_2D, sprite.texture);
+Sprite Box::load_texture(const std::string &file_name)
+{
+        Sprite spr{};
+
+	uchar* img = stbi_load(file_name.c_str(), &spr.w_h[0], &spr.w_h[1], 0, 4); 
+	glGenTextures(1, &spr.texture);
+	glBindTexture(GL_TEXTURE_2D, spr.texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-				 sprite.w_h[0], sprite.w_h[1], 
+				 spr.w_h[0], spr.w_h[1], 
 				 0, GL_RGBA, GL_UNSIGNED_BYTE, 
 				 img);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glDisable(GL_BLEND);
-
-
 
 	stbi_image_free(img);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// scale();
+        sprite = spr;
+
+        return spr;
 }
 
-void Box::set_emotion(const std::string &emotion) {
-	if (auto it = emotion_map.find(emotion); it != emotion_map.end()) {
-            set_texture(it->second);
-	}
+void Box::set_texture(const std::string &emotion) {
+    if (auto it = map.find(emotion); it != map.end()) {
+        sprite = it->second;
+    }
 }
 
 void Box::scale() { // this downsizes to fit in 70% of screen height  
