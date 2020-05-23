@@ -30,7 +30,7 @@ void Box::set_texture(const std::string &file_name)
 
 void Box::set_emotion(const std::string &emotion) {
 	if (auto it = emotion_map.find(emotion); it != emotion_map.end()) {
-		set_texture(it->second);
+            set_texture(it->second);
 	}
 }
 
