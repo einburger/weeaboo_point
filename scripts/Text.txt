@@ -1,122 +1,121 @@
-at station_a.jpg
+at BG011.png
 
-> *audible frustration*
-> Hello.
-> Boy.
-> Man?
+> 
 
-place alice 50
-place preppy 50
-place swimsuit 50
+place sunohara cgsh10 10
+place nagisa cgng34 60
 
-fadein preppy 0.05
-wait preppy 0.5
+> I hate this town...
+> ...nothing here changes...
+> Huh? Who's that girl?
 
+fadein nagisa 0.05
 
-move preppy 20 5
-sync
-move swimsuit 53 5
-sync
-fadein swimsuit 0.05
-sync
-fadein alice 0.02 
+> mmmmmmmmmm...
 
-wait preppy 0.5 
+set nagisa cgng35
 
-> HUUAAH! Die mudcrab!
-
-move swimsuit 20 20
-
-> Hey!
-
-move swimsuit 150 15 
-sync
-move alice -350 20
-
-> I am preppy!
-> I'm just a girl.
-> A very... 
-
-set preppy closeup
-
-> ...lonely girl
-> ...
-> *you can tell by the way she looks*
-
-set preppy sad 
-wait preppy 0.8
-move preppy -150 10
-
-at love_one.png
-
-> I've had my flings...
-> *please stop the elipses*
-
-at love_two.png
-
-> ...my slobbering love affairs
-> ...but they usually don't last.
-> *this is my life now*
-
-at station_a.jpg
-move preppy 20 20
-
-> Why, you ask?
-
-move swimsuit 80 20
-
-> ...because of B O I S
-
-set preppy angry
-exit swimsuit right
-
-> Oh who am I kidding.
-
-move preppy -150 20
-set preppy bikini
-move preppy 20 20
-
-> Look at this bikini.
-
-move preppy -250 20
-
-at event_6.png
-
-> I-I-I have something...
-
-at event_5.png
-
-> I want t-to say 
-
-at event_3.png
-
-> to you...
-
-at event_4.png
-
+> breen
 > ...
 
-at event_1.png
+set nagisa cgng25z
 
-> ...B O I S!
-> *car noises*
+> ... BREEN BRED!!! 
 
-at station_a.jpg
-move swimsuit 80 20
 
-> Even her car is B O I S
+> * You stop and stare a bit... *
 
-set preppy summer
-move preppy 20 20
+set nagisa cgng15
 
-> Careful now...
+> * She notices you and gasps...* 
+> *...possibly from the akwardness. *
 
-move swimsuit 150 20
-sync
-exit preppy right
+> * You two stare at each other for a bit. *
 
-wait preppy 0.5
+set nagisa cgng18
 
-move swimsuit -100 20
-sync
-move preppy -100 10
+> * She relaxes her face for a moment *
+
+set nagisa cgng17z
+set nagisa cgng17y
+
+> YOU'RE A FUCKING SIMP!
+
+set nagisa cgng36
+
+move nagisa 0 5.5 sync
+fadeout nagisa 0.05
+
+fadein sunohara 0.05 sync
+
+move sunohara 50 10 sync
+
+> Heyyy okazerki-saaahn...
+> Let me see your... 
+
+set sunohara cgsh23
+
+> WAR FACE!!
+
+> "Please leave me alone, suno."
+
+fadeout sunohara 0.05 sync
+move sunohara 0 5
+
+at BG017.png
+
+> * First period is about to start *
+
+move sunohara 20 5 sync
+fadein sunohara 0.05
+
+> WAR FACE!!!
+
+fadeout sunohara 0.05 sync
+move sunohara -10 5
+
+at BG009N2.png
+
+> * It's 2 AM and suddenly...*
+> * CRAAASH *
+
+> "What was that?"
+
+> * You approach the closet *
+
+place nagisa cgng15e 70
+fadein nagisa 0.05
+
+> uguu~~~~
+> ...breen bred...
+> "... what?"
+
+set nagisa cgng32e 
+set nagisa cgng34e 
+set nagisa cgng36e
+set nagisa cgng34e 
+set nagisa cgng32e 
+set nagisa cgng34e 
+set nagisa cgng36e
+set nagisa cgng34e 
+set nagisa cgng32e 
+set nagisa cgng34e 
+set nagisa cgng36e
+set nagisa cgng34e 
+set nagisa cgng32e 
+set nagisa cgng34e 
+set nagisa cgng36e
+set nagisa cgng34e 
+
+set nagisa cgng31e
+move nagisa 0 5 sync
+fadeout nagisa 0.05
+
+set sunohara cgsh27x1
+fadein sunohara 0.02
+> OKAZERKI... 
+
+move sunohara 40 1 
+
+> I AM ERROR
+

@@ -9,3 +9,5 @@ Release/devildoctor.res
 x64/
 Release/
 Debug/
+build/
+*.swp
