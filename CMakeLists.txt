@@ -22,6 +22,17 @@ if (MSVC_IDE)
 	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
 endif()
 
+#include(FetchContent)
+#FetchContent_Declare(
+#	glfw
+#	GIT_REPOSITORY https://github.com/glfw/glfw
+#	GIT_TAG master
+#)
+# FetchContent_MakeAvailable(glfw)
+
+execute_process(COMMAND git clone https://github.com/glfw/glfw
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+
 add_executable(WeeabooPoint 
 	${PROJECT_SOURCE_DIR}/src/main.cpp
 	${PROJECT_SOURCE_DIR}/src/gamestate.cpp
