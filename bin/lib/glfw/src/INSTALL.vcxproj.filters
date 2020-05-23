@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\ctobi\Programming\Projects\weeaboo_point\bin\CMakeFiles\743fdb584a1ea358b37737bc897288e8\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CB120730-21DA-3CBC-9A38-455ECC0DEE57}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

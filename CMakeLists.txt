@@ -11,9 +11,6 @@ set(CMAKE_RUNTIME_LIBRARY_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 # add_compile_options(-O3)
 # add_compile_options(-Wpedantic)
 
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 if (MSVC_IDE)
 	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
@@ -22,16 +19,13 @@ if (MSVC_IDE)
 	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
 endif()
 
-#include(FetchContent)
-#FetchContent_Declare(
-#	glfw
-#	GIT_REPOSITORY https://github.com/glfw/glfw
-#	GIT_TAG master
-#)
-# FetchContent_MakeAvailable(glfw)
-
 execute_process(COMMAND git clone https://github.com/glfw/glfw
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_executable(WeeabooPoint 
 	${PROJECT_SOURCE_DIR}/src/main.cpp
@@ -47,9 +41,18 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/src/imgui_impl_glfw.cpp
 	${PROJECT_SOURCE_DIR}/src/imgui_impl_opengl2.cpp
 	${PROJECT_SOURCE_DIR}/src/imgui_widgets.cpp
+	
+
+	${PROJECT_SOURCE_DIR}/include/eventhandler.h
+	${PROJECT_SOURCE_DIR}/include/gamestate.h
+	${PROJECT_SOURCE_DIR}/include/geometry.h
+	${PROJECT_SOURCE_DIR}/include/globals.h
+	${PROJECT_SOURCE_DIR}/include/parser.h
+	${PROJECT_SOURCE_DIR}/include/scene.h
+	${PROJECT_SOURCE_DIR}/include/text.h
 	)
 
-target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/includes)
+target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/glfw)
 target_link_libraries(WeeabooPoint glfw)
@@ -57,6 +60,6 @@ target_link_libraries(WeeabooPoint glfw)
 find_package(OpenGL REQUIRED)
 target_link_libraries(WeeabooPoint OpenGL::GL)
 
-install(TARGETS WeeabooPoint DESTINATION ${PROJECT_SOURCE_DIR}/build)
+install(TARGETS WeeabooPoint DESTINATION ${PROJECT_SOURCE_DIR}/bin)
 
 

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\ctobi\Programming\Projects\weeaboo_point\bin\CMakeFiles\3159420e71449d38edcfc4a62f0b1b17\uninstall.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\ctobi\Programming\Projects\weeaboo_point\lib\glfw\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\ctobi\Programming\Projects\weeaboo_point\bin\lib\glfw\CMakeFiles\uninstall" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CB120730-21DA-3CBC-9A38-455ECC0DEE57}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
