@@ -42,7 +42,7 @@ void Scene::load(const std::string &path)
 	}
 
 	for (std::string line; std::getline(file, line); /* empty */)
-        { if (not line.empty()) script.push_back(line); }
+        { if (!line.empty()) script.push_back(line); }
 
 	file.close();
 
@@ -122,7 +122,7 @@ void SceneStateStack::update_state() {
 void SceneStateStack::revert_state(size_t line_num) {
     auto &scene = game_state->scene;
 
-    if (line_num > line_number or line_num < 1) {
+    if (line_num > line_number || line_num < 1) {
         return;
     }
     auto st = states[line_num];

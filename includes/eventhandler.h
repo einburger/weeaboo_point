@@ -85,7 +85,7 @@ struct EventHandler {
 
     void process() {
         events.remove_if([](const auto& event) {
-                return not event->on_going();
+                return !event->on_going();
                 });
 
         if (events.empty()) {

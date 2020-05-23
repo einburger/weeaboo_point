@@ -50,7 +50,7 @@ bool parse() {
 
 void set_bg(std::vector<std::string> &argv)
 {
-    decltype(auto) bg_name{argv[0]};
+    const auto &bg_name{argv[0]};
     const int width{game_state->window_width};
     const int height{game_state->window_height};
 
@@ -63,9 +63,9 @@ void play_song(std::vector<std::string> &argv)
 
 void place_character(std::vector<std::string> &argv)
 {
-    decltype(auto) character_name{argv[0]};
-    decltype(auto) emotion{argv[1]};
-    decltype(auto) x_pos{std::stof(argv[2])};
+    const auto &character_name{argv[0]};
+    auto emotion{argv[1]};
+    const auto &x_pos{std::stof(argv[2])};
 
     auto &ch = game_state->scene.get_character(character_name);
     ch.set_emotion(emotion);
@@ -76,7 +76,7 @@ void place_character(std::vector<std::string> &argv)
         return (x_pos / 100.0)  * game_state->window_width - character_half_width();
     };
 
-    auto y_moved_down = [&]() { return game_state->window_height - ch.w_h[1]; };
+    const auto &y_moved_down = [&]() { return game_state->window_height - ch.w_h[1]; };
     ch.set_position({ (int)percent_screen_width(), y_moved_down() });
 
     if (argv.back() == "sync") {
@@ -86,8 +86,8 @@ void place_character(std::vector<std::string> &argv)
 
 void set_emotion(std::vector<std::string> &argv)
 {
-    const std::string& character_name{argv[0]};
-    const std::string& emotion{argv[1]};
+    const auto& character_name{argv[0]};
+    const auto& emotion{argv[1]};
 
     auto& ch = game_state->scene.get_character(character_name);
     ch.set_emotion(emotion);
@@ -95,8 +95,8 @@ void set_emotion(std::vector<std::string> &argv)
 
 void exit_character(std::vector<std::string> &argv)
 {
-    const std::string& character_name{argv[0]};
-    const std::string& direction{argv[1]};
+    const auto& character_name{argv[0]};
+    const auto& direction{argv[1]};
 
     auto& ch = game_state->scene.get_character(character_name);
     int target_pos = direction == "left" ? -ch.w_h[0] : game_state->window_width;
@@ -112,9 +112,9 @@ void exit_character(std::vector<std::string> &argv)
 
 void move_character(std::vector<std::string> &argv)
 {
-    decltype(auto) character_name{std::move(argv[0])};
-    decltype(auto) x_pos{std::stof(argv[1])};
-    decltype(auto) speed{std::stof(argv[2])};
+    const auto &character_name{argv[0]};
+    auto x_pos{std::stof(argv[1])};
+    auto speed{std::stof(argv[2])};
 
     auto& ch = game_state->scene.get_character(character_name);
 
@@ -136,8 +136,8 @@ void move_character(std::vector<std::string> &argv)
 
 void fade_in(std::vector<std::string> &argv)
 {
-    decltype(auto) character_name{argv[0]};
-    decltype(auto) speed{std::stof(argv[1])};
+    const auto &character_name{argv[0]};
+    auto speed{std::stof(argv[1])};
 
     auto& ch = game_state->scene.get_character(argv[0]);
     ch.fade_speed = speed;
@@ -151,7 +151,7 @@ void fade_in(std::vector<std::string> &argv)
 
 void fade_out(std::vector<std::string> &argv)
 {
-    decltype(auto) character_name{argv[0]};
+    const auto &character_name{argv[0]};
     const float speed{std::stof(argv[1])};
 
     auto& ch = game_state->scene.get_character(character_name);
@@ -166,7 +166,7 @@ void fade_out(std::vector<std::string> &argv)
 
 void scene_wait(std::vector<std::string> &argv)
 {
-    decltype(auto) character_name{argv[0]};
+    const auto &character_name{argv[0]};
     const float wait_time{std::stof(argv[1])};
 
     auto& ch = game_state->scene.get_character(argv[0]);

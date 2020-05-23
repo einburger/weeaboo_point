@@ -1,8 +1,8 @@
 // devildoctor.cpp : Defines the entry point for the console application.
 
-#include <imgui/imgui.h>
-#include <imgui/examples/imgui_impl_glfw.h>
-#include <imgui/examples/imgui_impl_opengl2.h>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl2.h"
 #include <stdio.h>
 #include <string>
 

@@ -4,19 +4,23 @@ project(WeeabooPoint)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_LIBRARY_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
-
-add_compile_options(-Wfatal-errors)
+# add_compile_options(-Wfatal-errors)
 # add_compile_options(-O3)
 # add_compile_options(-Wpedantic)
-
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-# file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/.cpp)
+if (MSVC_IDE)
+	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
+	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
+	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+endif()
 
 add_executable(WeeabooPoint 
 	${PROJECT_SOURCE_DIR}/src/main.cpp
@@ -34,8 +38,7 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/src/imgui_widgets.cpp
 	)
 
-target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/includes
-                                        PUBLIC ${PROJECT_SOURCE_DIR}/imgui)
+target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/includes)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/glfw)
 target_link_libraries(WeeabooPoint glfw)
@@ -43,6 +46,6 @@ target_link_libraries(WeeabooPoint glfw)
 find_package(OpenGL REQUIRED)
 target_link_libraries(WeeabooPoint OpenGL::GL)
 
-install(TARGETS WeeabooPoint DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+install(TARGETS WeeabooPoint DESTINATION ${PROJECT_SOURCE_DIR}/build)
 
 
