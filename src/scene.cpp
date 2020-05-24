@@ -11,26 +11,29 @@
 
 Scene::Scene (const std::string &scene_script)
 {
-	// create and initialize textbox
-	textbox = Box(game_state->window_width * 0.14, 
-		      game_state->window_height * 0.28, 
-		      game_state->window_width * 0.5, 
-		      game_state->window_height * 0.1);
-	textbox.rgba = {1.0f, 1.0f, 1.0f, 0.7f};
-	textbox.load_texture(std::string(TEXTBOX_BG_PATH + "ptext.png"));
-	textbox.set_size(textbox.sprite.w_h);
+	 //create and initialize textbox
+	 textbox = Box(game_state->window_width * 0.14, 
+	 	      game_state->window_height * 0.28, 
+	 	      game_state->window_width * 0.5, 
+	 	      game_state->window_height * 0.1);
+	 textbox.rgba = {1.0f, 1.0f, 1.0f, 0.7f};
+	 textbox.set_texture(std::string(TEXTBOX_BG_PATH + "ptext.png"));
+	 textbox.set_size(textbox.sprite.w_h);
 
-	// create and initialize bg
+	 // create and initialize bg
 	background = Box(0, 0, game_state->window_width, game_state->window_height);
+        background.rgba[3] = 1.0f;
 	continue_arrow = Box(game_state->window_width * 0.70, 
 		             game_state->window_height * 0.91, 5, 5);
-	continue_arrow.load_texture(std::string(TEXTBOX_BG_PATH + "Untitled1.png"));
+	continue_arrow.set_texture(std::string(TEXTBOX_BG_PATH + "Untitled1.png"));
+        continue_arrow.rgba[3] = 1.0f;
 
 	int w = continue_arrow.sprite.w_h[0] * 0.2;
 	int h = continue_arrow.sprite.w_h[1] * 0.2;
 	continue_arrow.set_size({w, h});
 
-	// load script
+        fileloader::sniff_files();
+        background.sprite_paths = fileloader::get_paths("bg");
 	load(scene_script);
 	text_init("arialbd.ttf", 32.0);
 }
@@ -81,6 +84,9 @@ Character& Scene::get_character(const std::string &name)
 			return character;
 		}
 	}
+        characters.push_back(Character(0,0,0,0));
+        characters.back().name = name;
+        characters.back().sprite_paths = fileloader::get_paths(name);
 	return characters.back();
 }
 

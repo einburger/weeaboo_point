@@ -67,7 +67,8 @@ bool parse() {
 void set_bg(std::vector<std::string> &argv)
 {
     const auto &bg_name{argv[0]};
-    game_state->scene.background.set_texture(bg_name);
+    std::string fullpath = "../backgrounds/" + bg_name + ".png";
+    game_state->scene.background.set_texture(fullpath);
 }
 
 
@@ -79,9 +80,11 @@ void place_character(std::vector<std::string> &argv)
     const auto &character_name{argv[0]};
     auto emotion{argv[1]};
     const auto &x_pos{std::stof(argv[2])};
+    std::string fullpath = "../characters/" + character_name + "/" + emotion + ".png";
 
     auto &ch = game_state->scene.get_character(character_name);
-    ch.set_texture(emotion);
+
+    ch.set_texture(fullpath);
     ch.scale(); // scale texture to size
 
     auto percent_screen_width = [&]() {
@@ -99,7 +102,9 @@ void set_emotion(std::vector<std::string> &argv)
     const auto& emotion{argv[1]};
 
     auto& ch = game_state->scene.get_character(character_name);
-    ch.set_texture(emotion);
+    std::string fullpath = "../characters/" + character_name + "/" + emotion + ".png";
+
+    ch.set_texture(fullpath); // need fullpath
 }
 
 void exit_character(std::vector<std::string> &argv)

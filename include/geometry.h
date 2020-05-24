@@ -2,7 +2,7 @@
 
 #include <array>
 #include <string>
-#include <unordered_map>
+#include <unordered_set>
 #include <functional>
 
 typedef unsigned char uchar;
@@ -127,17 +127,19 @@ struct Box
 	std::array<int, 2> min_xy{};
 	std::array<int, 2> max_xy{};
 	std::array<int, 2> w_h{};
-        std::array<float, 4> rgba{1.0f, 1.0f, 1.0f, 1.0f};
+        std::array<float, 4> rgba{1.0f, 1.0f, 1.0f, 0.0f};
 
 	/* should be animation object */
 	float wait_time{0.0f};
 	float speed{5.0f};
 	float fade_speed{0.05f};
 	int target_pos{};
-        unsigned int low_index{100'000}, high_index{0};
+        // unsigned int low_index{100'000}, high_index{0};
 
 	Sprite sprite;
-	std::unordered_map<std::string, Sprite> map; // should be in a different class
+        std::vector<Sprite> sprites;
+        std::vector<std::string> sprite_paths;
+        unsigned int sprite_paths_idx;
 
 	Box() = default;
 
@@ -158,9 +160,7 @@ struct Box
 
 	void scale();
 
-	void set_texture(const std::string &file_name);
-	Sprite load_texture(const std::string &file_name);
-	// void set_emotion(const std::string &emotion);
+	void set_texture(const std::string &fullpath);
 
 	void draw();
 

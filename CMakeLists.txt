@@ -8,9 +8,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_LIBRARY_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 add_compile_options(-Wfatal-errors)
-add_compile_options(-O3)
-# add_compile_options(-Wpedantic)
-add_compile_options(-fpermissive)
+if (!MSVC)
+    #add_compile_options(-O3)
+    # add_compile_options(-Wpedantic)
+    add_compile_options(-fpermissive)
+endif()
 
 
 if (MSVC_IDE)

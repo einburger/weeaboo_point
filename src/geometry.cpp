@@ -1,37 +1,16 @@
 #include <ctime>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include "globals.h"
 #include "geometry.h"
+#include "fileloader.h"
 
-
-Sprite Box::load_texture(const std::string &file_name)
-{
-        Sprite spr{};
-
-	uchar* img = stbi_load(file_name.c_str(), &spr.w_h[0], &spr.w_h[1], 0, 4); 
-	glGenTextures(1, &spr.texture);
-	glBindTexture(GL_TEXTURE_2D, spr.texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-				 spr.w_h[0], spr.w_h[1], 
-				 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-				 img);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	stbi_image_free(img);
-
-        sprite = spr;
-
-        return spr;
-}
-
-void Box::set_texture(const std::string &emotion) {
-    if (auto it = map.find(emotion); it != map.end()) {
-        sprite = it->second;
+void Box::set_texture(const std::string &fullpath) {
+    sprite = fileloader::get_sprite(fullpath);
+    for (const auto &tex : sprites) {
+        if (tex.texture == sprite.texture) 
+            return;
     }
+    sprites.push_back(sprite);
 }
 
 void Box::scale() { // this downsizes to fit in 70% of screen height  

@@ -41,14 +41,6 @@ int main()
 	glfwMakeContextCurrent(game_state->current_window);
 	//glfwSwapInterval(1); // vsync
 
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-        ImGui::StyleColorsDark();
-
-        ImGui_ImplGlfw_InitForOpenGL(game_state->current_window, true);
-        ImGui_ImplOpenGL2_Init();
 
 	std::string path = SCRIPT_PATH + std::string{"Text.txt"};
 
@@ -68,7 +60,17 @@ int main()
 	glOrtho(0.0f, game_state->window_width, game_state->window_height, 0.0f, 0.0f, 1.0f);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        fileloader::load_images();
+        // fileloader::load_images();
+
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplGlfw_InitForOpenGL(game_state->current_window, true);
+        ImGui_ImplOpenGL2_Init();
+
         // target_line= game_state->scene.script.size()-1;
         target_line= 2;
 	while (!glfwWindowShouldClose(game_state->current_window))
@@ -91,8 +93,13 @@ int main()
                     //  }
 
                     auto &scene = game_state->scene;
-                    ImGui::SliderScalar("Background", ImGuiDataType_U32, &scene.background.sprite.texture, 
-                                        &scene.background.low_index, &scene.background.high_index, "");
+
+                    static unsigned int start_idx = 0, end_idx = scene.background.sprite_paths.size()-1;
+                    if (ImGui::SliderScalar("Backgrounds", ImGuiDataType_U32, &scene.background.sprite_paths_idx, 
+                                             &start_idx, &end_idx, ""))
+                    {
+                          scene.background.set_texture(scene.background.sprite_paths[scene.background.sprite_paths_idx]);
+                    }
 
                     ImGui::Separator();
 
@@ -101,7 +108,13 @@ int main()
                         for (auto &ch : game_state->scene.characters) {
                             if (ImGui::TreeNode(ch.name.c_str())) {
 
-                                ImGui::SliderScalar("Sprite", ImGuiDataType_U32, &ch.sprite.texture, &ch.low_index, &ch.high_index, "");
+                                static unsigned int start_idx_2{0}, end_idx_2 = ch.sprite_paths.size()-1;
+                                if (ImGui::SliderScalar("Sprites", ImGuiDataType_U32, &ch.sprite_paths_idx, &start_idx_2, &end_idx_2))
+                                {
+                                    ch.set_texture(ch.sprite_paths[ch.sprite_paths_idx]);
+                                } 
+
+
                                 ImGui::SliderInt("X-Pos", &ch.min_xy[0], -ch.w_h[0], game_state->window_width, "");
                                 ImGui::SliderInt("Y-Pos", &ch.min_xy[1], game_state->window_height, -ch.w_h[1], "");
                                 ImGui::ColorEdit4("Color", ch.rgba.data());
@@ -125,7 +138,7 @@ int main()
                                 // while (!event_handler->events.empty())
 			        //     event_handler->process(scene_states.get());
                                 event_handler->events.clear();
-                                scene_states->revert_state(i+1);
+                                scene_states->revert_state(i);
                                 game_state->text_cursor_pos = game_state->scene.dialog.size();
                                 game_state->waiting_for_input = true;
                         }

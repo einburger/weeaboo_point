@@ -25,7 +25,7 @@ struct GameState
 	Scene				scene;
 	int                             window_width{1280};
 	int                             window_height{720};
-	int			        fps{333};
+	int			        fps{60};
 	size_t                          text_cursor_pos{0};
 	double		                dt{0.0};
 	const char*			window_title{"WeeabooPoint"};
