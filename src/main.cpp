@@ -108,8 +108,8 @@ int main()
                         for (auto &ch : game_state->scene.characters) {
                             if (ImGui::TreeNode(ch.name.c_str())) {
 
-                                static unsigned int start_idx_2{0}, end_idx_2 = ch.sprite_paths.size()-1;
-                                if (ImGui::SliderScalar("Sprites", ImGuiDataType_U32, &ch.sprite_paths_idx, &start_idx_2, &end_idx_2))
+                                unsigned int start_idx_2 = 0, end_idx_2 = ch.sprite_paths.size()-1;
+                                if (ImGui::SliderScalar("Sprites", ImGuiDataType_U32, &ch.sprite_paths_idx, &start_idx_2, &end_idx_2,""))
                                 {
                                     ch.set_texture(ch.sprite_paths[ch.sprite_paths_idx]);
                                 } 
