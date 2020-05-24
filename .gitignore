@@ -12,3 +12,8 @@ Debug/
 build/
 *.swp
 lib/glfw/
+characters/
+backgrounds/
+fonts/
+scripts/
+textbox_bg/
