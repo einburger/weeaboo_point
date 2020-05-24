@@ -13,7 +13,7 @@ I recommend using git bash, it makes this process easier
     git clone https://github.com/einburger/weeaboo_point
     cd weeaboo_point && mkdir build && cd build && cmake ../ && start devenv WeeabooPoint.sln
 
-Right click the top most solution in the solution explorere window and click "Set as StartUp Project"
+Right click WeeabooPoint in in the solution explorere window and click "Set as StartUp Project"
     
 ## Other Systems ##
 
