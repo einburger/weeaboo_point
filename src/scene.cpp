@@ -9,45 +9,51 @@
 #include "globals.h" // PATH
 #include "fileloader.h"
 
-Scene::Scene (const std::string &scene_script)
+Scene::Scene(const std::string& scene_script)
 {
-	 //create and initialize textbox
-	 textbox = Box(game_state->window_width * 0.14, 
-	 	      game_state->window_height * 0.28, 
-	 	      game_state->window_width * 0.5, 
-	 	      game_state->window_height * 0.1);
-	 textbox.rgba = {1.0f, 1.0f, 1.0f, 0.7f};
-	 textbox.set_texture(std::string(TEXTBOX_BG_PATH + "ptext.png"));
-	 textbox.set_size(textbox.sprite.w_h);
+	fileloader::sniff_files();
 
-	 // create and initialize bg
-	background = Box(0, 0, game_state->window_width, game_state->window_height);
-        background.rgba[3] = 1.0f;
-	continue_arrow = Box(game_state->window_width * 0.70, 
-		             game_state->window_height * 0.91, 5, 5);
+
+	//create and initialize textbox
+	textbox = Character();
+	textbox.set_size(GameState::w_h[0] * 0.6, GameState::w_h[1] * 0.2);
+	textbox.set_pos(GameState::w_h[0] * 0.2, GameState::w_h[1] * 0.7);
+	//textbox.set_alpha(0.7f);
+	textbox.set_color(std::array<float,4>{ 0,0,0,0.7 });
+	//textbox.set_texture(std::string(TEXTBOX_BG_PATH + "ptext.png"));
+	//textbox.set_to_sprite_size();
+
+	textfield = Field("arialbd.ttf", 32.0, textbox.min_xy[0], textbox.min_xy[1]);
+
+	// create and initialize bg
+	background = Character(0, 0, GameState::w_h[0], GameState::w_h[1]);
+	background.set_alpha(1.0f);
+	background.sprite_paths = fileloader::get_paths("bg");
+
+	continue_arrow = Character();
 	continue_arrow.set_texture(std::string(TEXTBOX_BG_PATH + "Untitled1.png"));
-        continue_arrow.rgba[3] = 1.0f;
+	continue_arrow.set_alpha(1.0f);
+	const int w = continue_arrow.sprite.w_h[0] * 0.2;
+	const int h = continue_arrow.sprite.w_h[1] * 0.2;
+	continue_arrow.set_to_sprite_size();
+	continue_arrow.set_size(w, h);
+	continue_arrow.set_pos(textbox.max_xy[0]-(w+2), textbox.max_xy[1]-(h+2));
 
-	int w = continue_arrow.sprite.w_h[0] * 0.2;
-	int h = continue_arrow.sprite.w_h[1] * 0.2;
-	continue_arrow.set_size({w, h});
-
-        fileloader::sniff_files();
-        background.sprite_paths = fileloader::get_paths("bg");
 	load(scene_script);
-	text_init("arialbd.ttf", 32.0);
 }
 
-void Scene::load(const std::string &path)
+void Scene::load(const std::string& scriptpath)
 {
-        // load script
-	auto file = std::ifstream(path);
-	if (!file.is_open()) {
+	auto file = std::ifstream(scriptpath);
+	if (!file.is_open())
+	{
 		exit(EXIT_FAILURE);
 	}
 
 	for (std::string line; std::getline(file, line); /* empty */)
-        { if (!line.empty()) script.push_back(line); }
+	{
+		if (!line.empty()) script.push_back(line);
+	}
 
 	file.close();
 }
@@ -56,92 +62,34 @@ void Scene::draw()
 {
 	background.draw();
 
-	for (auto& character : characters) {
+	for (auto& character : characters)
+	{
 		character.draw();
 	}
 
 	textbox.draw();
-	text_draw(dialog.c_str());
+	if (!GameState::scene.dialog.empty())
+		textfield.dl.draw();
 
-	auto &arrow = continue_arrow;
 
-	int x = game_state->window_width * 0.60 + 5 * sin(clock() * 0.009);
+	//int x = GameState::w_h[0] * 0.60 + 5 * sin(clock() * 0.009);
 
-	arrow.set_position({x, arrow.min_xy[1]});
-	if (game_state->waiting_for_input)
+	auto& arrow = continue_arrow;
+	//arrow.set_pos(x, arrow.min_xy[1]);
+	if (GameState::waiting_for_input)
 		continue_arrow.draw();
 }
 
-void Scene::get_input()
+Character& Scene::get_character(const std::string& name)
 {
-	game_state->waiting_for_input = true;
-}
-
-Character& Scene::get_character(const std::string &name)
-{
-	for (auto &character : characters) {
-		if (character.name == name) {
+	for (auto& character : characters)
+	{
+		if (character.name == name)
+		{
 			return character;
 		}
 	}
-        characters.push_back(Character(0,0,0,0));
-        characters.back().name = name;
-        characters.back().sprite_paths = fileloader::get_paths(name);
+	characters.push_back(Character(name));
+	characters.back().sprite_paths = fileloader::get_paths(name);
 	return characters.back();
 }
-
-// savestate stuff
-void SceneStateStack::update_state(int i) {
-    auto &scene = game_state->scene;
-
-    SceneSaveState st;
-    for (const auto& ch : scene.characters) {
-        st.characters.push_back(ch);
-    }
-
-    st.background = scene.background;
-    st.continue_arrow = scene.continue_arrow;
-    st.dialog = scene.dialog;
-    st.waiting_for_input = game_state->waiting_for_input; 
-
-    states[i] = st;
-}
-
-void SceneStateStack::update_state() {
-    auto &scene = game_state->scene;
-
-    SceneSaveState st;
-    for (const auto& ch : scene.characters) {
-        st.characters.push_back(ch);
-    }
-
-    st.background = scene.background;
-    st.continue_arrow = scene.continue_arrow;
-    st.dialog = scene.dialog;
-    st.waiting_for_input = game_state->waiting_for_input; 
-
-    states.push_back(st);
-}
-
-void SceneStateStack::revert_state(size_t line_num) {
-    auto &scene = game_state->scene;
-
-    if (line_num > line_number || line_num < 1) {
-        return;
-    }
-
-    states.erase(states.begin() + line_num+1, states.end());
-
-    auto st = states[line_num];
-    for (int i{}; i < scene.characters.size(); ++i) {
-       scene.characters[i] = st.characters[i]; 
-    }
-
-    scene.background = st.background;
-    scene.continue_arrow = st.continue_arrow;
-    scene.dialog = st.dialog;
-    game_state->waiting_for_input = st.waiting_for_input;
-    line_number = line_num;
-
-}
-

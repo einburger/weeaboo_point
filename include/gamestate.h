@@ -6,35 +6,16 @@
 #include "geometry.h"
 #include "scene.h"
 
-struct CursorState
-{
-	bool				holding_left_mouse{false};
-	bool				clicked{false};
-	double				current_x{}; 
-	double				current_y{}; 
-	double				click_pos_x{}; 
-	double				click_pos_y{};
-
-	CursorState() = default;
-};
-
-struct GameState
-{
-	GLFWwindow*			current_window{NULL};
-	Box				last_clicked_box;
-	Scene				scene;
-	int                             window_width{1280};
-	int                             window_height{720};
-	int			        fps{60};
-	size_t                          text_cursor_pos{0};
-	double		                dt{0.0};
-	const char*			window_title{"WeeabooPoint"};
-	bool				waiting_for_input{false};
-
-	GameState() = default;
-};
-
-
+namespace GameState {
+	extern GLFWwindow*			current_window;
+	extern Scene				scene;
+	extern std::array<int, 2>	w_h;
+	extern int			        fps;
+	extern double		        dt;
+	extern const char*			window_title;
+	extern bool					waiting_for_input;
+	extern int					text_cursor_pos;
+}
 
 // callbacks
 void gamestate_window_size_callback(GLFWwindow* window, int width, int height);

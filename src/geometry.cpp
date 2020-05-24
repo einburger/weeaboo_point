@@ -4,8 +4,8 @@
 #include "geometry.h"
 #include "fileloader.h"
 
-void Box::set_texture(const std::string &fullpath) {
-    sprite = fileloader::get_sprite(fullpath);
+void Textured::set_texture(const std::string &fullpath) {
+    sprite = fileloader::load_sprite(fullpath);
     for (const auto &tex : sprites) {
         if (tex.texture == sprite.texture) 
             return;
@@ -13,15 +13,14 @@ void Box::set_texture(const std::string &fullpath) {
     sprites.push_back(sprite);
 }
 
-void Box::scale() { // this downsizes to fit in 70% of screen height  
-	set_size(sprite.w_h);
+void Physical::scale_to_screen() {
+	set_size(sprite.w_h[0], sprite.w_h[1]);
 	const int start = w_h[1];
-	w_h[1] = game_state->window_height * 0.9;
+	w_h[1] = GameState::w_h[1] * 0.9;
 	w_h[0] = ((w_h[0] * w_h[1]) / start);
 }
 
-
-void Box::draw()
+void Physical::draw()
 {
 	glBindTexture(GL_TEXTURE_2D, sprite.texture);
 	glBegin(GL_QUADS);
@@ -47,7 +46,7 @@ void Box::draw()
 
 
 // only gets called if an event calls it
-bool Box::move(int x, int y, int speed)
+bool Animatable::move(int x, int y, int speed)
 {
 	int s = speed;
 	double hyp = std::abs((double)x - min_xy[0]);
@@ -59,10 +58,8 @@ bool Box::move(int x, int y, int speed)
 
 	if (std::abs((double)min_xy[0] - x) > 5)
 	{ // didn't reach the target
-		if (min_xy[0] > x)
-                        set_position(min_xy - std::array{s, 0});
-		else
-			set_position(min_xy + std::array{s, 0});
+		min_xy[0] > x ? set_pos(min_xy[0] - s, min_xy[1]) 
+				  	  : set_pos(min_xy[0] + s, min_xy[1]);
 	}
 	else
 	{
@@ -72,7 +69,7 @@ bool Box::move(int x, int y, int speed)
 	return true;
 }
 
-bool Box::wait(double seconds)
+bool Animatable::wait(double seconds)
 {
 	static clock_t start, stop;
 
@@ -97,7 +94,7 @@ bool Box::wait(double seconds)
 	return true;
 }
 
-bool Box::fade(float speed)
+bool Animatable::fade(float speed)
 { // negative speed means fadout
 	auto fade_in = [&](){
 		if (rgba[3] < 1.0) {
@@ -118,14 +115,14 @@ bool Box::fade(float speed)
 	return speed < 0 ? fade_out() : fade_in();
 }
 
-void geometry_line_draw(int x0, int y0, int x1, int y1)
-{
-	glBegin(GL_LINES);
-	{
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glVertex2f(x0, y0);
-		glVertex2f(x1, y1);
-	}
-	glEnd();
-}
+// void geometry_line_draw(int x0, int y0, int x1, int y1)
+// {
+// 	glBegin(GL_LINES);
+// 	{
+// 		glColor4f(1.0, 1.0, 1.0, 1.0);
+// 		glVertex2f(x0, y0);
+// 		glVertex2f(x1, y1);
+// 	}
+// 	glEnd();
+// }
 

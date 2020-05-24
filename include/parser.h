@@ -32,3 +32,10 @@ void scene_wait(Args);
 void write_line(Args);
 void speed_write_line(Args);
 
+
+
+struct ParseEvent
+{
+	bool do_action() { return parse(); }
+};
+

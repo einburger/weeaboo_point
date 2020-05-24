@@ -1,5 +1,7 @@
 #include "globals.h" // path
 
+#include "text.h"
+
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
 
@@ -13,7 +15,7 @@ static stbtt_bakedchar cdata_2[96];
 
 static GLuint ftex, btex;
 
-void text_init(const char* path, float sz)
+void Field::init(const char* path, float sz)
 {
 	std::string text_path = FONT_PATH + path;
 
@@ -33,73 +35,17 @@ void text_init(const char* path, float sz)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 512, 512, 0, GL_ALPHA, GL_UNSIGNED_BYTE, temp_bitmap_2);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
-void text_draw(const char* line)
-{
-	float xpos = game_state->scene.textbox.min_xy[0] + 180;
-	float ypos = game_state->scene.textbox.max_xy[1] - 68;
-
-	/* black text moved by 2 in each cardinal direction to create
-	 * to create a black text border */
-	text_render(line, xpos + 2, ypos + 2, BLACK);
-	text_render(line, xpos - 2, ypos - 2, BLACK);
-	text_render(line, xpos + 2, ypos - 2, BLACK);
-	text_render(line, xpos - 2, ypos + 2, BLACK);
-	text_render(line, xpos, ypos - 2, BLACK);
-	text_render(line, xpos, ypos + 2, BLACK);
-	text_render(line, xpos + 2, ypos, BLACK);
-	text_render(line, xpos - 2, ypos, BLACK);
-
-	text_render(line, xpos, ypos, WHITE);
-}
-
-void text_render(const char* text, float x, float y, int COLOR)
-{
-	glBindTexture(GL_TEXTURE_2D, ftex);
-
-	switch (COLOR)
-	{
-	case BLACK:
-		glColor4f(0.0, 0.0, 0.0, 1.0);
-		break;
-	case WHITE:
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		break;
-	}
-
-	glBegin(GL_QUADS);
-	{
-		for (size_t i = 0; i < game_state->text_cursor_pos; ++i)
-		{
-			if (*text)
-			{
-				if (*text >= 32 && *text < 128)
-				{
-					static stbtt_aligned_quad q;
-					stbtt_GetBakedQuad(cdata, 512, 512, *text - 32, &x, &y, &q, 1);
-					glTexCoord2f(q.s0, q.t1); glVertex2f(q.x0, q.y1);
-					glTexCoord2f(q.s1, q.t1); glVertex2f(q.x1, q.y1);
-					glTexCoord2f(q.s1, q.t0); glVertex2f(q.x1, q.y0);
-					glTexCoord2f(q.s0, q.t0); glVertex2f(q.x0, q.y0);
-				}
-				++text;
-			}
-		}
-	}
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-
-char text_write_animation(const char* text)
+bool Field::write_animation()
 {
 	static clock_t start, stop;
 	static char init_time = 0;
-	if (game_state->text_cursor_pos > strlen(text))
+	if (GameState::text_cursor_pos > GameState::scene.dialog.size())
 	{
-		game_state->waiting_for_input = true;
-		return 0;
+		GameState::waiting_for_input = true;
+		return false;
 	}
 
 	if (!init_time)
@@ -112,13 +58,58 @@ char text_write_animation(const char* text)
 		stop = clock() - start;
 		double elapsed_time = (double)stop / CLOCKS_PER_SEC;
 
-		if (elapsed_time > 0.01f)
+		if (elapsed_time > 0.5f)
 		{
-			text_draw(text);
+			dl.draw();
 			init_time = 0;
 			stop = start;
-			game_state->text_cursor_pos++;
 		}
 	}
-	return 1;
+	return true;
 }
+
+void Line::draw()
+{
+	char* text = (char*)line.c_str();
+
+	glBindTexture(GL_TEXTURE_2D, ftex);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	int start_x = x_pos;
+	glBegin(GL_QUADS);
+	{
+		for (size_t i = 0; i < local_cursor_pos; ++i)
+		{
+			if (*text)
+			{
+				if (*text >= 32 && *text < 128)
+				{
+					static stbtt_aligned_quad q;
+					stbtt_GetBakedQuad(cdata, 512, 512, *text - 32, &x_pos, &y_pos, &q, 1);
+					glTexCoord2f(q.s0, q.t1); glVertex2f(q.x0, q.y1);
+					glTexCoord2f(q.s1, q.t1); glVertex2f(q.x1, q.y1);
+					glTexCoord2f(q.s1, q.t0); glVertex2f(q.x1, q.y0);
+					glTexCoord2f(q.s0, q.t0); glVertex2f(q.x0, q.y0);
+				}
+				++text;
+			}
+		}
+	}
+	x_pos = start_x;
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void DialogLines::draw()
+{
+	for (size_t i{}; i < lines.size(); ++i)
+	{
+		lines[i].draw();
+		if (lines[i].local_cursor_pos <= lines[i].line.size())
+		{
+			lines[i].local_cursor_pos++;
+			GameState::text_cursor_pos++;
+			return;
+		}
+	}
+}
+

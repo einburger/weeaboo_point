@@ -5,15 +5,14 @@
 
 namespace fileloader {
 
-namespace fs = std::filesystem;
+	namespace fs = std::filesystem;
 
-const fs::path BG_PATH = "../backgrounds/";
-const fs::path CHARACTER_PATH = "../characters/";
+	const fs::path BG_PATH = "../backgrounds/";
+	const fs::path CHARACTER_PATH = "../characters/";
 
-const std::vector<std::string> & get_paths(const std::string &name); 
-void sniff_files();
-
-Sprite get_sprite(const std::string& fullpath);
+	void sniff_files();
+	const std::vector<std::string> & get_paths(const std::string &name); 
+	Sprite load_sprite(const std::string& fullpath);
 
 }
 

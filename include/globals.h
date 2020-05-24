@@ -24,10 +24,7 @@
 #include "geometry.h"
 #include "parser.h"
 
-extern std::unique_ptr<GameState> game_state;
-extern std::unique_ptr<CursorState> cursor;
 extern std::unique_ptr<EventHandler> event_handler;
-extern std::unique_ptr<SceneStateStack> scene_states;
 
 #define arr_size(a) sizeof(a) / sizeof(&a[0])
 

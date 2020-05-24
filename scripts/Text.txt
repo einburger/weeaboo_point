@@ -1,12 +1,10 @@
 at BG011
 
-> 
-
 place sunohara cgsh10 10
 place nagisa cgng34 60
 
-> I hate this town...
-> ...nothing here changes...
+> I hate this town... because it's the worst and girliest town in the whole damn world man ...nothing here changes... because of you
+
 > Huh? Who's that girl?
 
 fadein nagisa 0.05
@@ -27,8 +25,7 @@ set nagisa cgng25z
 
 set nagisa cgng15
 
-> * She notices you and gasps...* 
-> *...possibly from the akwardness. *
+> * She notices you and gasps, possibly from the akwardness. *
 
 > * You two stare at each other for a bit. *
 

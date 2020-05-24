@@ -37,6 +37,7 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/src/scene.cpp
 	${PROJECT_SOURCE_DIR}/src/text.cpp
         ${PROJECT_SOURCE_DIR}/src/fileloader.cpp
+	${PROJECT_SOURCE_DIR}/src/eventhandler.cpp
 
 	${PROJECT_SOURCE_DIR}/src/imgui.cpp
 	${PROJECT_SOURCE_DIR}/src/imgui_demo.cpp
