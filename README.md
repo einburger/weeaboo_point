@@ -10,14 +10,10 @@ a C++17 compatible compiler.
 
 I recommend using git bash, it makes this process easier
 
-step one:
-    open git bash in the folder you want this project to be
-step two:
-    ```git clone https://github.com/einburger/weeaboo_point```
-step three:
-    ```cd weeaboo_point && mkdir build && cd build && cmake ../ && start devenv WeeabooPoint.sln```
-step four:
-    right click the top most solution in the solution explorere window and click "Set as StartUp Project"
+    git clone https://github.com/einburger/weeaboo_point
+    cd weeaboo_point && mkdir build && cd build && cmake ../ && start devenv WeeabooPoint.sln
+
+Right click the top most solution in the solution explorere window and click "Set as StartUp Project"
     
 ## Other Systems ##
 
