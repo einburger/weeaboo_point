@@ -3,13 +3,14 @@ at BG011
 place sunohara cgsh10 10
 place nagisa cgng34 60
 
-> I hate this town... because it's the worst and girliest town in the whole damn world man ...nothing here changes... because of you
+>
+> Every day, I eat salam-ey, because that's what the Corinians say. They say salam-ey. And they say it again and again.
 
 > Huh? Who's that girl?
 
 fadein nagisa 0.05
 
-> mmmmmmmmmm...
+> mmmmmmmmmm..... SALAM-EY
 
 set nagisa cgng35
 
@@ -18,7 +19,7 @@ set nagisa cgng35
 
 set nagisa cgng25z
 
-> ... BREEN BRED!!! 
+> ... it's what the Corinians say.
 
 
 > * You stop and stare a bit... *

@@ -147,12 +147,18 @@ struct Physical : public Textured
 	std::array<int, 2>		w_h{1,1};
 	std::array<float, 4>	rgba{ 1.0f, 1.0f, 1.0f, 0.0f };
 
+
 	inline void set_pos(int x, int y)
 	{
 		min_xy[0] = x;
 		min_xy[1] = y;
 		max_xy[0] = x + w_h[0];
 		max_xy[1] = y + w_h[1];
+	}
+
+	inline void set_x(int x)
+	{
+		set_pos(x, min_xy[1]);
 	}
 
 	inline void set_to_sprite_size()
@@ -220,7 +226,5 @@ struct Character : public Animatable
 	}
 };
 
-
-// void geometry_line_draw(int x0, int y0, int x1, int y1);
 
 

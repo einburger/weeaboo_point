@@ -4,17 +4,66 @@
 #include <functional>
 #include <numeric>
 
-#include "parser.h"
 #include "globals.h"
+#include "parser.h"
 #include "geometry.h"
 #include "scene.h"
+
+std::optional<std::function<void(int)>> 
+timed_call(double time, std::function<void(int)> f)
+{
+	static clock_t start, stop;
+
+	static bool init_time = false;
+	if (!init_time)
+	{
+		start = clock();
+		init_time = true;
+	}
+	else
+	{
+		stop = clock() - start;
+		double elapsed_time = (double)stop / CLOCKS_PER_SEC;
+
+		if (elapsed_time > time)
+		{
+			init_time = false;
+			stop = start;
+			return f;
+		}
+	}
+	return std::nullopt;
+}
+
+struct MoveGraph  
+{
+	Character* ch;
+	std::array<int, 9> poses{ 0,2,4,8,16,32,64,128,512 };
+	float time=0.4;
+	int step = 0;
+
+	MoveGraph() = default;
+	MoveGraph(std::tuple<Character*, float> &args) {
+		ch = std::get<0>(args);
+		time = std::get<1>(args);
+	}
+
+	bool do_action()
+	{
+		if (auto f = timed_call(time, [&](int val){ ch->set_x(ch->min_xy[0] + val); } ))
+		{
+			(*f)(poses[step++]);
+		}
+		return step < poses.size();
+	}
+};
 
 struct DialogEvent
 {
 	DialogEvent(const std::string& dialog)
 	{
 		const int x = GameState::scene.textbox.min_xy[0] 
-					+ GameState::scene.textbox.w_h[0] * 0.1;
+					+ GameState::scene.textbox.w_h[0] * 0.08;
 		const int y = GameState::scene.textbox.min_xy[1]
 			+ GameState::scene.textbox.w_h[1] * 0.3;
 		GameState::scene.textfield.dl = DialogLines(dialog, x, y);
@@ -212,7 +261,8 @@ void move_character(std::vector<std::string>& argv)
 	ch.target_pos = percent_screen_width();
 	ch.speed = speed;
 
-	event_handler->push_back(new Event<CharacterMoveEvent>(ch));
+	//event_handler->push_back(new Event<CharacterMoveEvent>(ch));
+	event_handler->push_back(new Event<MoveGraph>(std::tuple<Character *, float>{ &ch, 0.01 }));
 
 	if (argv.back() == "sync")
 	{

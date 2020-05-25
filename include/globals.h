@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <tchar.h>
-#include <time.h>
+#include <ctime>
 #include <ctype.h>
 #include <vector>
 #include <string>
@@ -18,6 +18,9 @@
 #include <filesystem>
 
 #include <memory>
+#include <utility>
+#include <functional>
+#include <optional>
 
 #include "gamestate.h"
 #include "eventhandler.h"
