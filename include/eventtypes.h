@@ -20,8 +20,9 @@ struct MoveAnimationEvent : BaseEvent
 	{
 		const float x = ((300.0f - positions[step].x)/300.0f) * GameState::w_h[0];
 		const float y = ((500.0f - positions[step].y)/500.0f) * GameState::w_h[1];
-		ch->set_pos(x, y);
-		return ++step < positions.size();
+		ch->set_x(x);
+		step++;
+		return step < positions.size();
 	}
 };
 

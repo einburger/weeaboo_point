@@ -112,10 +112,6 @@ int main()
 								ch.set_texture(ch.sprite_paths[ch.sprite_paths_idx]);
 							}
 
-							// controlled by animation tab
-							ImGui::SliderInt("X-Pos", &ch.min_xy[0], -ch.w_h[0], GameState::w_h[0], "");
-							ImGui::SliderInt("Y-Pos", &ch.min_xy[1], GameState::w_h[1], -ch.w_h[1], "");
-							// ch.set_pos(ch.min_xy[0], ch.min_xy[1]);
 							ImGui::ColorEdit4("Color", ch.rgba.data());
 
 							ImGui::TreePop();
@@ -263,7 +259,7 @@ int main()
 					{
 						event_handler->events.clear();
 						GameState::waiting_for_input = false;
-						event_handler->push_back(new MoveAnimationEvent(spline,ch));
+						event_handler->push_back(new MoveAnimationEvent(spline, ch));
 						line_number--;
 					}
 				};

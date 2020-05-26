@@ -6,7 +6,7 @@
 
 GLFWwindow*				GameState::current_window=nullptr;
 Scene					GameState::scene{};
-std::array<int, 2>		GameState::w_h{1920, 1080};
+std::array<int, 2>		GameState::w_h{1280, 720};
 double					GameState::fps{ 1.0 / 60 };
 double					GameState::dt{ 0.0 };
 double					GameState::prev_time{ glfwGetTime() };

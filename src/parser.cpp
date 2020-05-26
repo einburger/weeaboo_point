@@ -40,7 +40,8 @@ std::unordered_map<std::string, void(*)(Args)> speed_map({
 bool parse()
 {
 	if (line_number > GameState::scene.script.size()) {
-	     exit(EXIT_SUCCESS);		
+		exit(EXIT_SUCCESS);
+	}
 
 	std::istringstream ss(GameState::scene.script[line_number++]);
 

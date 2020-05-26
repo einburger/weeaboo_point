@@ -21,9 +21,13 @@ if (MSVC_IDE)
 	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
 endif()
 
-execute_process(COMMAND git clone https://github.com/glfw/glfw
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-
+include(FetchContent)
+FetchContent_Declare(
+	glfw
+	GIT_REPOSITORY https://github.com/glfw/glfw
+	GIT_TAG	       master
+)
+FetchContent_MakeAvailable(glfw)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -55,13 +59,12 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/include/parser.h
 	${PROJECT_SOURCE_DIR}/include/scene.h
 	${PROJECT_SOURCE_DIR}/include/text.h
-        ${PROJECT_SOURCE_DIR}/include/fileloader.h
+    ${PROJECT_SOURCE_DIR}/include/fileloader.h
 	${PROJECT_SOURCE_DIR}/include/graphing.h
 	)
 
 target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/glfw)
 target_link_libraries(WeeabooPoint glfw)
 
 find_package(OpenGL REQUIRED)

@@ -1,10 +1,13 @@
 at BG011
 
-place sunohara cgsh10 -20
-place nagisa cgng34 60
+place sunohara cgsh10 80
 
->
-> Every day, I eat salam-ey, because that's what the Corinians say. They say salam-ey. And they say it again and again.
+> * A man approaches. *
+
+fadein sunohara 0.05
+
+
+> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 
 > Huh? Who's that girl?
 
