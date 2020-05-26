@@ -16,32 +16,79 @@ size_t target_line = 0;
 
 #include "scene.h" // scene_create
 
-
-
-ImVector<ImVec2> get_bez(ImVec2& p0, ImVec2& p1, ImVec2& p2, ImVec2& p3, int time_slices)
+ImVector<ImVec2> get_bez_alt(ImVec2& p0, ImVec2& p1, ImVec2& p2, ImVec2& p3, int time_slices)
 {
-	auto cube_bez = [](float a, float b, float c, float d, float t)
+	auto bez = [](float a, float b, float c, float d, float t)
 	{
-		auto lerp = [](float a, float b, float t)
-		{
-			return a * (1.0f - t) + b * t;
-		};
-		auto quadric_bez = [lerp](float a, float b, float c, float t)
-		{
-			return lerp(lerp(a, b, t), lerp(b, c, t), t);
-		};
-		return lerp(quadric_bez(a, b, c, t), quadric_bez(b, c, d, t), t);
+		const float C1 = (d - (3.0f * c) + (3.0f * b) - a);
+		const float C2 = ((3.0f * c) - (6.0f * b) + (3.0f * a));
+		const float C3 = ((3.0f * b) - (3.0f * a));
+		const float C4 = a;
+
+		return (C1 * t * t * t) + (C2 * t * t) + (C3 * t) + C4;
 	};
 
 	ImVector<ImVec2> vec;
-	for (int i = 0; i < time_slices; ++i)
+	ImVec2 point;
+	float target_delta = 500.0f / time_slices;
+
+	double dx = 0.005f;
+	double prev_t = 0.0f;
+	while (prev_t < 1.0f)
 	{
-		float t = ((float)i) / ((float)time_slices);
-		float xp = cube_bez(p0.x, p1.x, p2.x, p3.x, t);
-		float yp = cube_bez(p0.y, p1.y, p2.y, p3.y, t);
-		vec.push_back(ImVec2(xp, yp));
+		float temp_x_curr = bez(p0.x, p1.x, p2.x, p3.x, prev_t);
+		do {
+			prev_t += dx;
+		} while (std::abs(bez(p0.x, p1.x, p2.x, p3.x, prev_t) - temp_x_curr) < target_delta);
+		point.x = bez(p0.x, p1.x, p2.x, p3.x, prev_t);
+		point.y = bez(p0.y, p1.y, p2.y, p3.y, prev_t);
+		vec.push_back(point);
 	}
 
+	return vec;
+}
+
+ImVector<ImVec2> get_catmull_rom(ImVector<ImVec2> &points, int time_slices)
+{
+	if (points.Size < 4) {
+		return {};
+	}
+
+	ImVec2 point;
+	ImVector<ImVec2> vec;
+	const float target_delta = 500.0f / time_slices;
+
+	auto catmull_rom = [](float a, float b, float c, float d, float t)
+	{
+		return 0.5f * ((-a + 3 * b - 3 * c + d) * t * t * t
+					  + (2 * a - 5 * b + 4 * c - d) * t * t
+					  + (-a + c) * t
+					  + 2 * b);
+	};
+
+	auto uniform_catmull_rom = [&](ImVec2& p0, ImVec2& p1, ImVec2& p2, ImVec2& p3)
+	{
+		double dx = 0.005f;
+		double prev_t = 0.0f;
+		while (prev_t < 1.0f)
+		{
+			float temp_x_curr = catmull_rom(p0.x, p1.x, p2.x, p3.x, prev_t);
+			do
+			{
+				prev_t += dx;
+			} while (std::abs(catmull_rom(p0.x, p1.x, p2.x, p3.x, prev_t)) - temp_x_curr < target_delta);
+			point.x = catmull_rom(p0.x, p1.x, p2.x, p3.x, prev_t);
+			point.y = catmull_rom(p0.y, p1.y, p2.y, p3.y, prev_t);
+			vec.push_back(point);
+		}
+		vec.pop_back(); // don't want duplicates
+	};
+
+	for (int i{ 3 }; i < points.Size; ++i)
+	{
+		uniform_catmull_rom(points[i-3], points[i-2], points[i-1], points[i]);
+	}
+	
 	return vec;
 }
 
@@ -172,15 +219,14 @@ int main()
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
 			if (ImGui::BeginTabItem("Animator"))
 			{
-				static ImVector <ImVec2> points{};
 				static bool adding_line = false;
-
-
 
 				ImVec2 canvas_p = ImGui::GetCursorScreenPos();
 				ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
 				canvas_sz.y = 300.0f;
-				if (canvas_sz.x < 50.0f) canvas_sz.x = 50.0f;
+				canvas_sz.x = 500.0f;
+				//if (canvas_sz.x < 50.0f) canvas_sz.x = 50.0f;
+				//if (canvas_sz.y < 300.0f) canvas_sz.y = 300.0f;
 				draw_list->AddRectFilledMultiColor(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y), 
 												   IM_COL32(50, 50, 50, 255), IM_COL32(50, 50, 60, 255), IM_COL32(60, 60, 70, 255), IM_COL32(50, 50, 60, 255));
 				draw_list->AddRect(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y), 
@@ -193,24 +239,33 @@ int main()
 				ImVec2 mouse_pos_canvas = ImVec2(mouse_pos_global.x - canvas_p.x, 
 												 mouse_pos_global.y - canvas_p.y);
 
+				static ImVector <ImVec2> points{};
+				static int number_of_cpoints = 10;
+				static float step_sz = canvas_sz.x / ((float)number_of_cpoints - 1);
+				if (ImGui::SliderInt("Number Of Control Points", &number_of_cpoints, 4, 10))
+				{
+					points.clear();
+					step_sz = canvas_sz.x / ((float)number_of_cpoints - 1);
+				}
 				if (points.empty())
 				{
-					static float fourth = canvas_sz.x / 3;
-					points.push_back(ImVec2(0, canvas_sz.y / 2));
-					points.push_back(ImVec2(fourth, canvas_sz.y / 2));
-					points.push_back(ImVec2(fourth + fourth, canvas_sz.y / 2));
-					points.push_back(ImVec2(canvas_sz.x, canvas_sz.y / 2));
+					for (int i{ -1 }; i < number_of_cpoints+1; ++i)
+					{ // we need two points off screen on both sides so index at -1
+						points.push_back(ImVec2(0 + (i * step_sz), canvas_sz.y / 2));
+					}
 				}
 
 				static bool dragging_point = false;
-				static ImVec2 *drag_point = &points[1];
-				if (ImGui::IsItemHovered())
+				static ImVec2 *drag_point = &points[0];
+				if (1)
 				{
 					if (ImGui::IsMouseDragging(0) && dragging_point)
 					{
-							if (drag_point != &points[0] && drag_point != &points[3])
-								drag_point->x = mouse_pos_canvas.x;
-							drag_point->y = mouse_pos_canvas.y;
+						if (drag_point != &points[1] && drag_point != &points[points.size()-2])
+						{ // first point and last point are dummy points, want to fix the second and second to last points
+							drag_point->x = mouse_pos_canvas.x;
+						}
+						drag_point->y = mouse_pos_canvas.y;
 					}
 					if (ImGui::IsMouseDown(0) && !dragging_point)
 					{
@@ -230,32 +285,51 @@ int main()
 					dragging_point = false;
 				}
 
-				static int time_slices = 10;
-				ImGui::SliderInt("Animation Time Steps", &time_slices, 4, 100); 
-				if (ImGui::Button("Reset")) points.clear();
+				Character *ch = &GameState::scene.characters[0];
+
+				static int time_slices = 200, current_step=0;
+				ImGui::SliderInt("Animation Time Steps", &time_slices, 4, 500); 
 				draw_list->PushClipRect(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y), true);
 				draw_list->AddLine(ImVec2(canvas_p.x + 0, canvas_p.y + (canvas_sz.y / 2)), 
 								   ImVec2(canvas_p.x +  canvas_sz.x, canvas_p.y+ (canvas_sz.y / 2)),
 								   IM_COL32(255,255,255,255), 1);
-				if (points.Size == 4)
+
+
+				auto spline = get_catmull_rom(points, time_slices);
+
+				for (auto p : spline)
 				{
-					ImVec2 a(canvas_p.x + points[0].x, canvas_p.y + points[0].y);
-					ImVec2 b(canvas_p.x + points[1].x, canvas_p.y + points[1].y);
-					ImVec2 c(canvas_p.x + points[2].x, canvas_p.y + points[2].y);
-					ImVec2 d(canvas_p.x + points[3].x, canvas_p.y + points[3].y);
-					// auto llll = get_bez(a, b, c, d, time_slices);
-					for (auto cc : get_bez(a,b,c,d,time_slices))
-					{
-						draw_list->AddCircleFilled(cc, 4, IM_COL32(0, 255, 0, 100), 12);
-					}
-					draw_list->AddCircleFilled(a, 7, IM_COL32(255, 0, 0, 255), 12);
-					draw_list->AddCircleFilled(b, 7, IM_COL32(255, 0, 0, 255), 12);
-					draw_list->AddCircleFilled(c, 7, IM_COL32(255, 0, 0, 255), 12);
-					draw_list->AddCircleFilled(d, 7, IM_COL32(255, 0, 0, 255), 12);
+					p.x += canvas_p.x;
+					p.y += canvas_p.y;
+					draw_list->AddCircleFilled(p, 2, IM_COL32(0, 255, 255, 100), 5);
 				}
+
+				for (auto p : points)
+				{
+					p.x += canvas_p.x;
+					p.y += canvas_p.y;
+					draw_list->AddCircle(p, 5, IM_COL32(255, 0, 0, 255), 5);
+				}
+
+
 				draw_list->PopClipRect();
 
+				if (ImGui::SliderInt("Preview Step", &current_step, 0, time_slices))
+				{
+					if (current_step < spline.size())
+						ch->set_x(((300.0f - spline[current_step].y) / 300.0f) * GameState::w_h[0]);
+				}
 				
+				if (ImGui::Button("Reset")) points.clear();
+				if (ImGui::Button("Play"))
+				{
+					event_handler->events.clear();
+					GameState::waiting_for_input = false;
+					event_handler->push_back(new Event<MoveGraph>(std::tuple<Character *, 
+											 ImVector<ImVec2>>(ch, spline)));
+					line_number--;
+				}
+
 				ImGui::EndTabItem();
 			}
 

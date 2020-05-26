@@ -150,9 +150,9 @@ struct Physical : public Textured
 
 	inline void set_pos(int x, int y)
 	{
-		min_xy[0] = x;
+		min_xy[0] = x - w_h[0]*0.5f;
 		min_xy[1] = y;
-		max_xy[0] = x + w_h[0];
+		max_xy[0] = x + w_h[0]*0.5f;
 		max_xy[1] = y + w_h[1];
 	}
 

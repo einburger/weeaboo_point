@@ -9,6 +9,7 @@
 #include "geometry.h"
 #include "scene.h"
 
+
 std::optional<std::function<void(int)>> 
 timed_call(double time, std::function<void(int)> f)
 {
@@ -35,28 +36,6 @@ timed_call(double time, std::function<void(int)> f)
 	return std::nullopt;
 }
 
-struct MoveGraph  
-{
-	Character* ch;
-	std::array<int, 9> poses{ 0,2,4,8,16,32,64,128,512 };
-	float time=0.4;
-	int step = 0;
-
-	MoveGraph() = default;
-	MoveGraph(std::tuple<Character*, float> &args) {
-		ch = std::get<0>(args);
-		time = std::get<1>(args);
-	}
-
-	bool do_action()
-	{
-		if (auto f = timed_call(time, [&](int val){ ch->set_x(ch->min_xy[0] + val); } ))
-		{
-			(*f)(poses[step++]);
-		}
-		return step < poses.size();
-	}
-};
 
 struct DialogEvent
 {
@@ -261,8 +240,7 @@ void move_character(std::vector<std::string>& argv)
 	ch.target_pos = percent_screen_width();
 	ch.speed = speed;
 
-	//event_handler->push_back(new Event<CharacterMoveEvent>(ch));
-	event_handler->push_back(new Event<MoveGraph>(std::tuple<Character *, float>{ &ch, 0.01 }));
+	event_handler->push_back(new Event<CharacterMoveEvent>(ch));
 
 	if (argv.back() == "sync")
 	{

@@ -17,7 +17,7 @@ Scene::Scene(const std::string& scene_script)
 	//create and initialize textbox
 	textbox = Character();
 	textbox.set_size(GameState::w_h[0] * 0.6, GameState::w_h[1] * 0.2);
-	textbox.set_pos(GameState::w_h[0] * 0.2, GameState::w_h[1] * 0.7);
+	textbox.set_pos(GameState::w_h[0] * 0.5, GameState::w_h[1] * 0.7);
 	//textbox.set_alpha(0.7f);
 	textbox.set_color(std::array<float,4>{ 0,0,0,0.7 });
 	//textbox.set_texture(std::string(TEXTBOX_BG_PATH + "ptext.png"));
