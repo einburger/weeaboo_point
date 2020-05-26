@@ -89,13 +89,7 @@ void place_character(std::vector<std::string>& argv)
 	ch.set_texture(fullpath);
 	ch.scale_to_screen(); // scale texture to size
 
-	auto percent_screen_width = [&]()
-	{
-		auto character_half_width = [&]() { return ch.w_h[0] / 2; };
-		return (x_pos / 100.0) * GameState::w_h[0] - character_half_width();
-	};
-
-	ch.set_pos((int)percent_screen_width(), GameState::w_h[1] - ch.w_h[1]*0.5f);
+	ch.set_pos(GameState::w_h[0] * 0.5f, GameState::w_h[1] - ch.w_h[1]*0.5f);
 }
 
 void set_emotion(std::vector<std::string>& argv)
