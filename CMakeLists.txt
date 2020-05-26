@@ -38,6 +38,7 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/src/text.cpp
         ${PROJECT_SOURCE_DIR}/src/fileloader.cpp
 	${PROJECT_SOURCE_DIR}/src/eventhandler.cpp
+	${PROJECT_SOURCE_DIR}/src/graphing.cpp
 
 	${PROJECT_SOURCE_DIR}/src/imgui.cpp
 	${PROJECT_SOURCE_DIR}/src/imgui_demo.cpp
@@ -46,8 +47,8 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/src/imgui_impl_opengl2.cpp
 	${PROJECT_SOURCE_DIR}/src/imgui_widgets.cpp
 	
-
 	${PROJECT_SOURCE_DIR}/include/eventhandler.h
+	${PROJECT_SOURCE_DIR}/include/eventtypes.h
 	${PROJECT_SOURCE_DIR}/include/gamestate.h
 	${PROJECT_SOURCE_DIR}/include/geometry.h
 	${PROJECT_SOURCE_DIR}/include/globals.h
@@ -55,6 +56,7 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/include/scene.h
 	${PROJECT_SOURCE_DIR}/include/text.h
         ${PROJECT_SOURCE_DIR}/include/fileloader.h
+	${PROJECT_SOURCE_DIR}/include/graphing.h
 	)
 
 target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/include)

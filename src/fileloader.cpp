@@ -1,13 +1,12 @@
 #include <filesystem>
-#include <algorithm>
-
-#include "fileloader.h"
-#include "globals.h"
-#include "geometry.h"
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include <filesystem>
+
+#include "fileloader.h"
+#include "globals.h"
+#include "gamestate.h"
+#include "geometry.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -16,7 +15,9 @@ namespace fileloader {
 
 	static std::unordered_map<std::string, std::vector<std::string> > sprite_paths;
 
-	const std::vector<std::string>& get_paths(const std::string& name) { return sprite_paths[name]; }
+	const std::vector<std::string>& get_paths(const std::string& name) { 
+		return sprite_paths[name]; 
+	}
 
 	// build a vector of paths to sprites of a specific folder / asset
 	void sniff_files()

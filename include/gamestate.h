@@ -10,8 +10,10 @@ namespace GameState {
 	extern GLFWwindow*			current_window;
 	extern Scene				scene;
 	extern std::array<int, 2>	w_h;
-	extern int			        fps;
+	extern double			    fps;
 	extern double		        dt;
+	extern double				curr_time;
+	extern double				prev_time;
 	extern const char*			window_title;
 	extern bool					waiting_for_input;
 	extern int					text_cursor_pos;

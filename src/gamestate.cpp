@@ -1,12 +1,16 @@
 #include <GLFW/glfw3.h>
+#include <string>
 
-#include "globals.h" // game_state
+#include "gamestate.h"
+#include "eventhandler.h"
 
 GLFWwindow*				GameState::current_window=nullptr;
 Scene					GameState::scene{};
-std::array<int, 2>		GameState::w_h{1280, 720};
-int						GameState::fps{ 60 };
+std::array<int, 2>		GameState::w_h{1920, 1080};
+double					GameState::fps{ 1.0 / 60 };
 double					GameState::dt{ 0.0 };
+double					GameState::prev_time{ glfwGetTime() };
+double					GameState::curr_time{ 0.0 };
 const char*				GameState::window_title{ "WeeabooPoint" };
 bool					GameState::waiting_for_input{ false };
 int						GameState::text_cursor_pos{};
@@ -22,20 +26,9 @@ void gamestate_framebuffer_size_callback(GLFWwindow* window, int width, int heig
 	glViewport(0, 0, width, height);
 }
 
-void gamestate_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-	{
-	}
+void gamestate_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) { }
 
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-	{
-	}
-}
-
-void gamestate_character_callback(GLFWwindow* window, unsigned int codepoint)
-{
-}
+void gamestate_character_callback(GLFWwindow* window, unsigned int codepoint) { }
 
 void gamestate_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -46,7 +39,6 @@ void gamestate_key_callback(GLFWwindow* window, int key, int scancode, int actio
 	{
 		if (action == GLFW_PRESS)
 		{
-			//GameState::scene.textfield.text_cursor_pos = 0;
 			GameState::text_cursor_pos = 0;
 			GameState::scene.dialog = "";
 			GameState::waiting_for_input = false;

@@ -1,14 +1,13 @@
 #pragma once
-#include <string>
 #include <list>
 #include <memory> // unique_ptr
-
 
 struct BaseEvent { 
     virtual bool on_going() = 0; 
     virtual ~BaseEvent() = default;
 };
 
+/*
 template <class T>
 struct Event : BaseEvent {
     T obj;
@@ -21,6 +20,7 @@ struct Event : BaseEvent {
         return obj.do_action();
     }
 };
+*/
 
 struct EventHandler {
     EventHandler() = default;
@@ -34,4 +34,6 @@ struct EventHandler {
 
 	void process();
 };
+
+extern std::unique_ptr<EventHandler> event_handler;
 

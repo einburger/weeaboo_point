@@ -1,8 +1,8 @@
-#include <cmath> // for sin
 #include <fstream>
 #include <filesystem>
 #include <iostream>
 
+#include "gamestate.h"
 #include "scene.h"
 #include "geometry.h" // box
 #include "text.h" // text_draw
@@ -13,15 +13,11 @@ Scene::Scene(const std::string& scene_script)
 {
 	fileloader::sniff_files();
 
-
 	//create and initialize textbox
 	textbox = Character();
 	textbox.set_size(GameState::w_h[0] * 0.6, GameState::w_h[1] * 0.2);
-	textbox.set_pos(GameState::w_h[0] * 0.5, GameState::w_h[1] * 0.7);
-	//textbox.set_alpha(0.7f);
+	textbox.set_pos(GameState::w_h[0] * 0.5, GameState::w_h[1] * 0.8);
 	textbox.set_color(std::array<float,4>{ 0,0,0,0.7 });
-	//textbox.set_texture(std::string(TEXTBOX_BG_PATH + "ptext.png"));
-	//textbox.set_to_sprite_size();
 
 	textfield = Field("arialbd.ttf", 32.0, textbox.min_xy[0], textbox.min_xy[1]);
 
@@ -62,20 +58,12 @@ void Scene::draw()
 {
 	background.draw();
 
-	for (auto& character : characters)
-	{
-		character.draw();
-	}
+	for (auto& character : characters) { character.draw(); }
 
 	textbox.draw();
-	if (!GameState::scene.dialog.empty())
-		textfield.dl.draw();
-
-
-	//int x = GameState::w_h[0] * 0.60 + 5 * sin(clock() * 0.009);
+	textfield.dl.draw();
 
 	auto& arrow = continue_arrow;
-	//arrow.set_pos(x, arrow.min_xy[1]);
 	if (GameState::waiting_for_input)
 		continue_arrow.draw();
 }
@@ -90,6 +78,27 @@ Character& Scene::get_character(const std::string& name)
 		}
 	}
 	characters.push_back(Character(name));
+	characters.back().set_pos(0, GameState::w_h[1] * 0.8);
 	characters.back().sprite_paths = fileloader::get_paths(name);
 	return characters.back();
+}
+
+void Scene::save(int i)
+{
+	if (i == saves.size())
+		saves.push_back(SavableData{});
+	saves[i].background = background;
+	saves[i].textbox = textbox;
+	saves[i].textfield = textfield;
+	saves[i].script = script;
+	saves[i].characters = characters;
+}
+
+void Scene::restore(int i)
+{
+	background = saves[i].background;
+	textbox = saves[i].textbox;
+	textfield = saves[i].textfield;
+	script = saves[i].script;
+	characters = saves[i].characters;
 }

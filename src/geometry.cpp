@@ -1,8 +1,9 @@
-#include <ctime>
+#include <string>
 
 #include "globals.h"
 #include "geometry.h"
 #include "fileloader.h"
+#include "gamestate.h"
 
 void Textured::set_texture(const std::string &fullpath) {
     sprite = fileloader::load_sprite(fullpath);
@@ -49,17 +50,17 @@ void Physical::draw()
 bool Animatable::move(int x, int y, int speed)
 {
 	int s = speed;
-	double hyp = std::abs((double)x - min_xy[0]);
+	double hyp = std::abs((double)x - center[0]);
 
 	if (s > hyp)
 	{
 		s = hyp - (hyp / 2);
 	}
 
-	if (std::abs((double)min_xy[0] - x) > 5)
+	if (std::abs((double)center[0] - x) > 5)
 	{ // didn't reach the target
-		min_xy[0] > x ? set_pos(min_xy[0] - s, min_xy[1]) 
-				  	  : set_pos(min_xy[0] + s, min_xy[1]);
+		center[0] > x ? set_pos(center[0] - s, center[1]) 
+				  	  : set_pos(center[0] + s, center[1]);
 	}
 	else
 	{
@@ -114,15 +115,4 @@ bool Animatable::fade(float speed)
 
 	return speed < 0 ? fade_out() : fade_in();
 }
-
-// void geometry_line_draw(int x0, int y0, int x1, int y1)
-// {
-// 	glBegin(GL_LINES);
-// 	{
-// 		glColor4f(1.0, 1.0, 1.0, 1.0);
-// 		glVertex2f(x0, y0);
-// 		glVertex2f(x1, y1);
-// 	}
-// 	glEnd();
-// }
 

@@ -1,5 +1,9 @@
-#include "globals.h" // path
+#include <string>
+#include <vector>
+#include <ctime>
 
+#include "globals.h" // path
+#include "gamestate.h"
 #include "text.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
@@ -40,31 +44,15 @@ void Field::init(const char* path, float sz)
 
 bool Field::write_animation()
 {
-	static clock_t start, stop;
-	static char init_time = 0;
+	//static clock_t start, stop;
+	//static char init_time = 0;
 	if (GameState::text_cursor_pos > GameState::scene.dialog.size())
 	{
 		GameState::waiting_for_input = true;
 		return false;
 	}
 
-	if (!init_time)
-	{
-		start = clock();
-		init_time = 1;
-	}
-	else
-	{
-		stop = clock() - start;
-		double elapsed_time = (double)stop / CLOCKS_PER_SEC;
-
-		if (elapsed_time > 0.5f)
-		{
-			dl.draw();
-			init_time = 0;
-			stop = start;
-		}
-	}
+	dl.update_cursor();
 	return true;
 }
 
@@ -99,17 +87,24 @@ void Line::draw()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void DialogLines::draw()
+void DialogLines::update_cursor()
 {
 	for (size_t i{}; i < lines.size(); ++i)
 	{
-		lines[i].draw();
 		if (lines[i].local_cursor_pos <= lines[i].line.size())
 		{
 			lines[i].local_cursor_pos++;
 			GameState::text_cursor_pos++;
 			return;
 		}
+	}
+}
+
+void DialogLines::draw()
+{
+	for (size_t i{}; i < lines.size(); ++i)
+	{
+		lines[i].draw();
 	}
 }
 

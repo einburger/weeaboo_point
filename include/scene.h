@@ -3,25 +3,25 @@
 
 #include <vector>
 #include <string>
+#include <list>
 
 #include "geometry.h"
 #include "text.h"
+#include <eventhandler.h>
 
-struct Savable
+struct SavableData 
 {
 	Character background{};
 	Character textbox{};
 	std::vector<std::string> script{ {} };
 	std::string dialog{};
 	std::vector<Character> characters{};
-
 	Field textfield{};
-
-	void save();
 };
 
-struct Scene : Savable
+struct Scene : SavableData
 {
+	std::vector<SavableData> saves{};
 	Character continue_arrow{};
 
 	Scene() = default;
@@ -33,6 +33,8 @@ struct Scene : Savable
 		return get_character(std::string(c_str_name));
 	}
 	void draw();
+	void save(int i);
+	void restore(int i);
 };
 
 #endif 

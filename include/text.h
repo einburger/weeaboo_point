@@ -3,7 +3,6 @@
 #include <iostream>
 #include <sstream>
 
-
 struct Line 
 {
 	std::string line{""};
@@ -50,6 +49,7 @@ struct DialogLines
 		}
 	}
 
+	void update_cursor();
 	void draw();
 };
 

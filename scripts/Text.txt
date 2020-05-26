@@ -1,6 +1,6 @@
 at BG011
 
-place sunohara cgsh10 10
+place sunohara cgsh10 -20
 place nagisa cgng34 60
 
 >
@@ -41,12 +41,11 @@ set nagisa cgng17y
 
 set nagisa cgng36
 
-move nagisa 0 5.5 sync
 fadeout nagisa 0.05
 
 fadein sunohara 0.05 sync
 
-move sunohara 50 10 sync
+move sunohara 50 10 
 
 > Heyyy okazerki-saaahn...
 > Let me see your... 

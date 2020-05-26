@@ -2,96 +2,12 @@
 #include <sstream>
 #include <unordered_map>
 #include <functional>
-#include <numeric>
 
 #include "globals.h"
 #include "parser.h"
 #include "geometry.h"
-#include "scene.h"
-
-
-std::optional<std::function<void(int)>> 
-timed_call(double time, std::function<void(int)> f)
-{
-	static clock_t start, stop;
-
-	static bool init_time = false;
-	if (!init_time)
-	{
-		start = clock();
-		init_time = true;
-	}
-	else
-	{
-		stop = clock() - start;
-		double elapsed_time = (double)stop / CLOCKS_PER_SEC;
-
-		if (elapsed_time > time)
-		{
-			init_time = false;
-			stop = start;
-			return f;
-		}
-	}
-	return std::nullopt;
-}
-
-
-struct DialogEvent
-{
-	DialogEvent(const std::string& dialog)
-	{
-		const int x = GameState::scene.textbox.min_xy[0] 
-					+ GameState::scene.textbox.w_h[0] * 0.08;
-		const int y = GameState::scene.textbox.min_xy[1]
-			+ GameState::scene.textbox.w_h[1] * 0.3;
-		GameState::scene.textfield.dl = DialogLines(dialog, x, y);
-	}
-	bool do_action()
-	{
-		return GameState::scene.textfield.write_animation();
-	}
-};
-
-// Event<CharacterMoveEvent>(ch);
-struct CharacterMoveEvent
-{
-	Character& ch;
-	CharacterMoveEvent(Character& ch) : ch(ch) {}
-	bool do_action()
-	{
-		return ch.move(ch.target_pos, ch.min_xy[1], ch.speed);
-	}
-};
-
-struct WaitEvent
-{
-	WaitEvent() = default;
-	bool do_action()
-	{
-		return false;
-	}
-};
-
-struct FadeInEvent
-{
-	Character& ch;
-	FadeInEvent(Character& ch) : ch(ch) {}
-	bool do_action()
-	{
-		return ch.fade(ch.fade_speed);
-	}
-};
-
-struct FadeOutEvent
-{
-	Character& ch;
-	FadeOutEvent(Character& ch) : ch(ch) {}
-	bool do_action()
-	{
-		return ch.fade(-ch.fade_speed);
-	}
-};
+#include "eventhandler.h"
+#include "eventtypes.h"
 
 std::unordered_map<std::string, void(*)(Args)> map({
 		{"at", set_bg},
@@ -123,9 +39,8 @@ std::unordered_map<std::string, void(*)(Args)> speed_map({
 
 bool parse()
 {
-	// if (line_number > GameState::scene.script.size()) {
-	  //   exit(EXIT_SUCCESS);		
-	//}
+	if (line_number > GameState::scene.script.size()) {
+	     exit(EXIT_SUCCESS);		
 
 	std::istringstream ss(GameState::scene.script[line_number++]);
 
@@ -138,6 +53,7 @@ bool parse()
 		remaining_tokens.push_back("");
 	}
 	remaining_tokens.pop_back(); // last is empty;
+	GameState::scene.save(GameState::scene.saves.size());
 
 	if (const auto& itr = map.find(token); itr != map.end())
 	{
@@ -178,8 +94,7 @@ void place_character(std::vector<std::string>& argv)
 		return (x_pos / 100.0) * GameState::w_h[0] - character_half_width();
 	};
 
-	const auto& y_moved_down = [&]() { return GameState::w_h[1] - ch.w_h[1]; };
-	ch.set_pos((int)percent_screen_width(), y_moved_down());
+	ch.set_pos((int)percent_screen_width(), GameState::w_h[1] - ch.w_h[1]*0.5f);
 }
 
 void set_emotion(std::vector<std::string>& argv)
@@ -202,12 +117,12 @@ void exit_character(std::vector<std::string>& argv)
 	int target_pos = direction == "left" ? -ch.w_h[0] : GameState::w_h[0];
 	ch.target_pos = target_pos;
 
-	event_handler->push_back(new Event<CharacterMoveEvent>(ch));
-	event_handler->push_back(new Event<FadeOutEvent>(ch));
+	event_handler->push_back(new CharacterMoveEvent(ch));
+	event_handler->push_back(new FadeOutEvent(ch));
 
 	if (argv.back() == "sync")
 	{
-		// event_handler->push_back(new Event<ParseEvent>);
+		event_handler->push_back(new ParseEvent{});
 	}
 }
 
@@ -240,11 +155,11 @@ void move_character(std::vector<std::string>& argv)
 	ch.target_pos = percent_screen_width();
 	ch.speed = speed;
 
-	event_handler->push_back(new Event<CharacterMoveEvent>(ch));
+	event_handler->push_back(new CharacterMoveEvent(ch));
 
 	if (argv.back() == "sync")
 	{
-		// event_handler->push_back(new Event<ParseEvent>);
+		event_handler->push_back(new ParseEvent{});
 	}
 }
 
@@ -276,11 +191,11 @@ void fade_in(std::vector<std::string>& argv)
 	auto& ch = GameState::scene.get_character(argv[0]);
 	ch.fade_speed = speed;
 
-	event_handler->push_back(new Event<FadeInEvent>(ch));
+	event_handler->push_back(new FadeInEvent(ch));
 
 	if (argv.back() == "sync")
 	{
-		// event_handler->push_back(new Event<ParseEvent>);
+		event_handler->push_back(new ParseEvent());
 	}
 }
 
@@ -302,11 +217,11 @@ void fade_out(std::vector<std::string>& argv)
 	auto& ch = GameState::scene.get_character(character_name);
 	ch.fade_speed = speed;
 
-	event_handler->push_back(new Event<FadeOutEvent>(ch));
+	event_handler->push_back(new FadeOutEvent(ch));
 
 	if (argv.back() == "sync")
 	{
-		// event_handler->push_back(new Event<ParseEvent>);
+		event_handler->push_back(new ParseEvent());
 	}
 }
 
@@ -342,7 +257,7 @@ void write_line(std::vector<std::string>& argv)
 	};
 
 	GameState::scene.dialog = merge_tokens();
-	event_handler->push_back(new Event<DialogEvent>(GameState::scene.dialog));
+	event_handler->push_back(new DialogEvent(GameState::scene.dialog));
 }
 
 void speed_write_line(std::vector<std::string>& argv)

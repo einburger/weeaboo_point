@@ -1,9 +1,8 @@
-
-
 #include "eventhandler.h"
 #include "geometry.h"
 #include "parser.h"
 #include "gamestate.h"
+#include "eventtypes.h"
 
 
 void EventHandler::process() {
@@ -14,7 +13,7 @@ void EventHandler::process() {
 
 	if (events.empty())
 	{
-		push_back(new Event<ParseEvent>);
+		push_back(new ParseEvent{});
 	}
 }
 
