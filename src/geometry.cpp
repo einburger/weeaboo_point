@@ -15,30 +15,29 @@ void Textured::set_texture(const std::string &fullpath) {
 }
 
 void Physical::scale_to_screen() {
-	set_size(sprite.w_h[0], sprite.w_h[1]);
-	const int start = w_h[1];
-	w_h[1] = GameState::w_h[1] * 0.9;
-	w_h[0] = ((w_h[0] * w_h[1]) / start);
+	set_size(sprite.wdth_hght);
+	float start = w_h.y;
+	w_h.y = GameState::w_h.x * 0.5f;
+	w_h.x = ((w_h.x * w_h.y) / start);
 }
 
-void Physical::draw()
-{
+void Physical::draw() {
 	glBindTexture(GL_TEXTURE_2D, sprite.texture);
 	glBegin(GL_QUADS);
 	{
-		glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
+		glColor4f(rgba.r, rgba.g, rgba.b, rgba.a);
 
 		glTexCoord2d(0.0, 0.0); // top left
-		glVertex2f(min_xy[0], min_xy[1]);
+		glVertex2f(min_xy.x, min_xy.y);
 
 		glTexCoord2d(1.0, 0.0); // top right
-		glVertex2f(max_xy[0], min_xy[1]);
+		glVertex2f(max_xy.x, min_xy.y);
 
 		glTexCoord2d(1.0, 1.0); // bottom right
-		glVertex2f(max_xy[0], max_xy[1]);
+		glVertex2f(max_xy.x, max_xy.y);
 
 		glTexCoord2d(0.0, 1.0); // bottom left
-		glVertex2f(min_xy[0], max_xy[1]);
+		glVertex2f(min_xy.x, max_xy.y);
 	}
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -47,20 +46,19 @@ void Physical::draw()
 
 
 // only gets called if an event calls it
-bool Animatable::move(int x, int y, int speed)
-{
+bool Animatable::move(int x, int y, int speed) {
 	int s = speed;
-	double hyp = std::abs((double)x - center[0]);
+	double hyp = std::abs((double)x - center.x);
 
 	if (s > hyp)
 	{
 		s = hyp - (hyp / 2);
 	}
 
-	if (std::abs((double)center[0] - x) > 5)
+	if (std::abs((double)center.x - x) > 5)
 	{ // didn't reach the target
-		center[0] > x ? set_pos(center[0] - s, center[1]) 
-				  	  : set_pos(center[0] + s, center[1]);
+		center.x > x ? set_pos(center.x - s, center.y) 
+				  	 : set_pos(center.x + s, center.y);
 	}
 	else
 	{
@@ -73,8 +71,8 @@ bool Animatable::move(int x, int y, int speed)
 bool Animatable::wait(double seconds)
 {
 	static clock_t start, stop;
-
 	static bool init_time = false;
+
 	if (!init_time)
 	{
 		start = clock();
@@ -97,22 +95,23 @@ bool Animatable::wait(double seconds)
 
 bool Animatable::fade(float speed)
 { // negative speed means fadout
+	std::cout << "entered fade func\n";
 	auto fade_in = [&](){
-		if (rgba[3] < 1.0) {
-			rgba[3] += speed;
+		if (rgba.a < 1.0f) {
+			rgba.a += speed;
 			return true;
 		}
 		return false;
 	};
 
 	auto fade_out = [&](){
-		if (rgba[3] > 0.0) {
-			rgba[3] += speed;
+		if (rgba.a > 0.0f) {
+			rgba.a += speed;
 			return true;
 		}
 		return false;
 	};
 
-	return speed < 0 ? fade_out() : fade_in();
+	return speed < 0.0f ? fade_out() : fade_in();
 }
 

@@ -10,11 +10,13 @@
 #include "graphing.h"
 #include "eventtypes.h"
 #include "eventhandler.h"
+#include "utils.h"
 
 std::unique_ptr<EventHandler> event_handler(new EventHandler());
 
 size_t line_number = 0;
 size_t target_line = 0;
+size_t restore_point = 0;
 
 #include "scene.h" // scene_create
 
@@ -26,7 +28,7 @@ int main()
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
 
-	GameState::current_window = glfwCreateWindow(GameState::w_h[0], GameState::w_h[1],
+	GameState::current_window = glfwCreateWindow(GameState::w_h.x, GameState::w_h.y,
 												 GameState::window_title, NULL, NULL);
 
 	if (!GameState::current_window)
@@ -51,7 +53,7 @@ int main()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0f, GameState::w_h[0], GameState::w_h[1], 0.0f, 0.0f, 1.0f);
+	glOrtho(0.0f, GameState::w_h.x, GameState::w_h.y, 0.0f, 0.0f, 1.0f);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	IMGUI_CHECKVERSION();
@@ -113,6 +115,8 @@ int main()
 							}
 
 							ImGui::ColorEdit4("Color", ch.rgba.data());
+							ImGui::Text("width height %d %d", ch.w_h.x, ch.w_h.y);
+							ImGui::Text("x y %d %d", ch.center.x, ch.center.y);
 
 							ImGui::TreePop();
 						}
@@ -124,13 +128,12 @@ int main()
 				ImGui::BeginChild("Scrolling");
 
 				int width = ImGui::GetWindowWidth();
-				for (int i{}; i < line_number; ++i)
+				for (int i{ 1 }; i < line_number; ++i)
 				{
 					if (ImGui::Button(GameState::scene.script[i].c_str(), ImVec2(width, 20)))
 					{
-						event_handler->events.clear();
-						GameState::scene.restore(i);
-						GameState::text_cursor_pos = 0;
+						restore_point = i - 1;
+						GameState::scene.restore(i-1);
 					}
 				}
 				ImGui::EndChild();
@@ -245,10 +248,10 @@ int main()
 					}
 					ImGui::SliderInt("Animation Time Steps", &time_slices, 1, 500, "");
 
-					Character* ch = &GameState::scene.characters[0];
+					Character &ch = GameState::scene.characters[1];
 					if (ImGui::SliderInt("Preview Step", &current_step, 0, time_slices)) {
 						if (current_step < spline.size())
-							ch->set_x(((300.0f - spline[current_step].y) / 300.0f) * GameState::w_h[0]);
+							ch.set_x(((300.0f - spline[current_step].y) / 300.0f) * GameState::w_h.x);
 					}
 
 					if (ImGui::Button("Reset")) {
@@ -259,8 +262,12 @@ int main()
 					{
 						event_handler->events.clear();
 						GameState::waiting_for_input = false;
-						event_handler->push_back(new MoveAnimationEvent(spline, ch));
-						line_number--;
+						event_handler->push_back(new MoveEvent(&ch, spline));
+					}
+					if (ImGui::Button("Save"))
+					{
+						GameState::scene.fns[restore_point] =
+							[&ch, spline] { event_handler->push_back(new MoveEvent(&ch, spline)); };
 					}
 				};
 

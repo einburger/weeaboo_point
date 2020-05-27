@@ -6,7 +6,7 @@
 
 GLFWwindow*				GameState::current_window=nullptr;
 Scene					GameState::scene{};
-std::array<int, 2>		GameState::w_h{1280, 720};
+v2<int>					GameState::w_h{1280, 720};
 double					GameState::fps{ 1.0 / 60 };
 double					GameState::dt{ 0.0 };
 double					GameState::prev_time{ glfwGetTime() };
@@ -14,11 +14,11 @@ double					GameState::curr_time{ 0.0 };
 const char*				GameState::window_title{ "WeeabooPoint" };
 bool					GameState::waiting_for_input{ false };
 int						GameState::text_cursor_pos{};
-
+bool					GameState::parsing{ true };
 
 void gamestate_window_size_callback(GLFWwindow* window, int width, int height)
 {
-	GameState::w_h = std::array{ width, height };
+	GameState::w_h = { width, height };
 }
 
 void gamestate_framebuffer_size_callback(GLFWwindow* window, int width, int height)

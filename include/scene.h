@@ -4,10 +4,14 @@
 #include <vector>
 #include <string>
 #include <list>
+#include <any>
+#include <functional>
+#include <memory>
 
 #include "geometry.h"
 #include "text.h"
-#include <eventhandler.h>
+#include "eventhandler.h"
+
 
 struct SavableData 
 {
@@ -16,11 +20,13 @@ struct SavableData
 	std::vector<std::string> script{ {} };
 	std::string dialog{};
 	std::vector<Character> characters{};
+	std::function<void()> executed_function;
 	Field textfield{};
 };
 
 struct Scene : SavableData
 {
+	std::vector<std::function<void()>> fns;
 	std::vector<SavableData> saves{};
 	Character continue_arrow{};
 

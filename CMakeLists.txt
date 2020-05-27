@@ -59,8 +59,9 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/include/parser.h
 	${PROJECT_SOURCE_DIR}/include/scene.h
 	${PROJECT_SOURCE_DIR}/include/text.h
-    ${PROJECT_SOURCE_DIR}/include/fileloader.h
+        ${PROJECT_SOURCE_DIR}/include/fileloader.h
 	${PROJECT_SOURCE_DIR}/include/graphing.h
+	${PROJECT_SOURCE_DIR}/include/utils.h
 	)
 
 target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/include)

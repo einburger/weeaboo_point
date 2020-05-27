@@ -21,14 +21,15 @@ struct Event : BaseEvent {
     }
 };
 */
+#include <iostream>
 
 struct EventHandler {
     EventHandler() = default;
 
     std::list<std::unique_ptr<BaseEvent>> events;
 
-    template<class T>
-    void push_back(T&& event) {
+    void push_back(BaseEvent* event) {
+		std::cout << "pushed new event\n";
         events.emplace_back(event);
     }
 

@@ -5,13 +5,15 @@
 #include <string>
 #include <functional>
 
+#include "utils.h"
+
 typedef unsigned char uchar;
 
 
 struct Sprite
 {
 	unsigned int	   texture{};
-	std::array<int, 2> w_h{};
+	v2<int> wdth_hght{};
 	std::string		   path;
 };
 
@@ -27,72 +29,57 @@ struct Textured
 
 struct Physical : public Textured
 {
-	std::array<int, 2>		min_xy{0,0};
-	std::array<int, 2>		max_xy{2,2};
-	std::array<int, 2>      center{ 1,1 };
-	std::array<int, 2>		w_h{2,2};
-	std::array<float, 4>	rgba{ 1.0f, 1.0f, 1.0f, 0.0f };
+	v2<int>		min_xy{0,0};
+	v2<int>		max_xy{2,2};
+	v2<int>     center{1,1};
+	v2<int>		w_h{2,2};
+	v4<float>	rgba{ 1.0f, 1.0f, 1.0f, 0.0f };
 
-	std::function<void(Physical&,int,int)> setpos = &Physical::set_pos;
-	std::function<void(Physical&, std::array<float, 4>)> setcolor = &Physical::set_color;
-	std::function<void(Physical&, int)> setx = &Physical::set_x;
-
-	void set_pos(int x, int y)
-	{
-		center[0] = x;
-		center[1] = y;
-		min_xy[0] = x - w_h[0]*0.5f;
-		min_xy[1] = y - w_h[1]*0.5f;
-		max_xy[0] = x + w_h[0]*0.5f;
-		max_xy[1] = y + w_h[1]*0.5f;
-	}
+	inline void set_pos(const v2<int>& other)
+	{ set_pos(other.x, other.y); }
 
 	inline void set_x(int x)
-	{
-		set_pos(x, center[1]);
-	}
+	{ set_pos(x, center.y); }
 
 	inline void set_y(int y)
+	{ set_pos(center.x, y); }
+
+	inline void set_pos(int x, int y)
 	{
-		set_pos(center[0], y);
+		center = { x, y };
+		min_xy = center - (w_h * 0.5f);
+		max_xy = center + (w_h * 0.5f);
 	}
-	
+
 	inline void set_to_sprite_size()
-	{
-		set_size(sprite.w_h[0], sprite.w_h[1]);
-	}
+	{ set_size(sprite.wdth_hght); }
+
+	inline void set_size(const v2<int>& other_w_h)
+	{ set_size(other_w_h.x, other_w_h.y); }
 
 	inline void set_size(int width, int height)
 	{
-		w_h = std::array{ width, height };
-		max_xy[0] = min_xy[0] + width;
-		max_xy[1] = min_xy[1] + height;
-		center[0] = min_xy[0] + w_h[0] * 0.5f;
-		center[1] = min_xy[1] + w_h[1] * 0.5f;
+		w_h = { width, height };
+		max_xy = min_xy + w_h;
+		center = min_xy + (w_h * 0.5f);
 	}
 
 	void scale_to_screen();
 
-	inline void set_color(std::array<float, 4>& color)
-	{
-		rgba = color;
-	}
+	inline void set_color(const v4<float>& color)
+	{ rgba = color; }
+
+	inline void set_color(float a, float b, float c, float d)
+	{ rgba.r = a, rgba.g = b, rgba.b = c, rgba.a = d; }
 
 	inline void set_alpha(float alpha)
-	{
-		rgba[3] = alpha;
-	}
+	{ rgba.a = alpha; }
 
 	void draw();
 };
 
 struct Animatable : public Physical
 {
-	float wait_time{ 0.0f };
-	float speed{ 5.0f };
-	float fade_speed{ 0.05f };
-	int	  target_pos{0};
-
 	bool move(const int x, const int y, const int speed);
 	bool wait(const double seconds);
 	bool fade(const float speed);
@@ -113,17 +100,16 @@ struct Character : public Animatable
 	}
 	Character(const int x_min, const int y_min, const int w, const int h) 
 	{  
-		min_xy  = std::array{ x_min, y_min };
-		w_h		= std::array{ w, h };
-		max_xy  = std::array{ x_min + w, y_min + h };
-		center[0] = min_xy[0] + w_h[0] * 0.5f;
-		center[1] = min_xy[1] + w_h[1] * 0.5f;
+		min_xy  = { x_min, y_min };
+		w_h		= { w, h };
+		max_xy  = min_xy + w_h;
+		center = min_xy + (w_h * 0.5f);
 	}
 
 	std::string to_string()
 	{
-		return name + " xpos " + std::to_string(min_xy[0]) 
-				    + " alpha " + std::to_string(rgba[3]);
+		return name + " xpos " + std::to_string(center.x) 
+				    + " alpha " + std::to_string(rgba.a);
 	}
 };
 

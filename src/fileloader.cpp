@@ -60,10 +60,10 @@ namespace fileloader {
 		{
 			Sprite spr{};
 
-			uchar* img = stbi_load(fullpath.c_str(), &spr.w_h[0], &spr.w_h[1], 0, 4);
+			uchar* img = stbi_load(fullpath.c_str(), &spr.wdth_hght.x, &spr.wdth_hght.y, 0, 4);
 			glGenTextures(1, &spr.texture);
 			glBindTexture(GL_TEXTURE_2D, spr.texture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spr.w_h[0], spr.w_h[1],
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spr.wdth_hght.x, spr.wdth_hght.y,
 						 0, GL_RGBA, GL_UNSIGNED_BYTE,
 						 img);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

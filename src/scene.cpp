@@ -15,25 +15,25 @@ Scene::Scene(const std::string& scene_script)
 
 	//create and initialize textbox
 	textbox = Character();
-	textbox.set_size(GameState::w_h[0] * 0.6, GameState::w_h[1] * 0.2);
-	textbox.set_pos(GameState::w_h[0] * 0.5, GameState::w_h[1] * 0.8);
-	textbox.set_color(std::array<float,4>{ 0,0,0,0.7 });
+	textbox.set_size(GameState::w_h.x * 0.6, GameState::w_h.y * 0.2);
+	textbox.set_pos(GameState::w_h.x * 0.5, GameState::w_h.y * 0.8);
+	textbox.set_color(v4<float>(0,0,0,0.7));
 
-	textfield = Field("arialbd.ttf", 32.0, textbox.min_xy[0], textbox.min_xy[1]);
+	textfield = Field("arialbd.ttf", 32.0, textbox.min_xy.x, textbox.min_xy.y);
 
 	// create and initialize bg
-	background = Character(0, 0, GameState::w_h[0], GameState::w_h[1]);
+	background = Character(0, 0, GameState::w_h.x, GameState::w_h.y);
 	background.set_alpha(1.0f);
 	background.sprite_paths = fileloader::get_paths("bg");
 
 	continue_arrow = Character();
 	continue_arrow.set_texture(std::string(TEXTBOX_BG_PATH + "Untitled1.png"));
 	continue_arrow.set_alpha(1.0f);
-	const int w = continue_arrow.sprite.w_h[0] * 0.2;
-	const int h = continue_arrow.sprite.w_h[1] * 0.2;
+	const int w = continue_arrow.sprite.wdth_hght.x * 0.2;
+	const int h = continue_arrow.sprite.wdth_hght.y * 0.2;
 	continue_arrow.set_to_sprite_size();
 	continue_arrow.set_size(w, h);
-	continue_arrow.set_pos(textbox.max_xy[0]-(w+2), textbox.max_xy[1]-(h+2));
+	continue_arrow.set_pos(textbox.max_xy.x-(w+2), textbox.max_xy.y-(h+2));
 
 	load(scene_script);
 }
@@ -78,27 +78,43 @@ Character& Scene::get_character(const std::string& name)
 		}
 	}
 	characters.push_back(Character(name));
-	characters.back().set_pos(0, GameState::w_h[1] * 0.8);
+	characters.back().set_pos(0, GameState::w_h.y * 0.8);
 	characters.back().sprite_paths = fileloader::get_paths(name);
 	return characters.back();
 }
 
 void Scene::save(int i)
 {
-	if (i == saves.size())
+	if (i == saves.size()) {
 		saves.push_back(SavableData{});
+	}
 	saves[i].background = background;
 	saves[i].textbox = textbox;
 	saves[i].textfield = textfield;
 	saves[i].script = script;
 	saves[i].characters = characters;
+	saves[i].dialog = dialog;
 }
 
 void Scene::restore(int i)
 {
+	if (i >= saves.size())
+	{
+		return;
+	}
+
+	GameState::parsing = false;
+
+	event_handler->events.clear();
+	GameState::text_cursor_pos = 0;
+
+	// restore states
 	background = saves[i].background;
 	textbox = saves[i].textbox;
 	textfield = saves[i].textfield;
 	script = saves[i].script;
 	characters = saves[i].characters;
+	dialog = saves[i].dialog;
+	GameState::waiting_for_input = false;
+	fns[i]();
 }
