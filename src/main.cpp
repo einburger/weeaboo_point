@@ -11,13 +11,13 @@
 #include "eventtypes.h"
 #include "eventhandler.h"
 #include "utils.h"
+#include "scene.h" // scene_create
+#include "animation_controller.h"
 
 std::unique_ptr<EventHandler> event_handler(new EventHandler());
 
 size_t line_number = 0;
 
-#include "scene.h" // scene_create
-int current_step = 0; // current animation time slice (animation frame)
 
 int main()
 {
@@ -64,6 +64,8 @@ int main()
 	ImGui_ImplGlfw_InitForOpenGL(GameState::current_window, true);
 	ImGui_ImplOpenGL2_Init();
 
+	AnimationController animation_controller_x{};
+	AnimationController animation_controller_a{};
 	while (!glfwWindowShouldClose(GameState::current_window))
 	{
 		GameState::curr_time = glfwGetTime();
@@ -74,8 +76,8 @@ int main()
 		{
 			if (!GameState::waiting_for_input)
 				event_handler->process();
-			current_step++;
 			GameState::dt--;
+			animation_controller_x.current_step++;
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -117,6 +119,8 @@ int main()
 							ImGui::ColorEdit4("Color", ch.rgba.data());
 							ImGui::Text("width height %d %d", ch.w_h.x, ch.w_h.y);
 							ImGui::Text("x y %d %d", ch.center.x, ch.center.y);
+							ImGui::Separator();
+
 
 							ImGui::TreePop();
 						}
@@ -131,7 +135,9 @@ int main()
 				for (int i{ 1 }; i < line_number; ++i)
 				{
 					if (ImGui::Button(GameState::scene.script[i].c_str(), ImVec2(width, 20)))
-					{ GameState::scene.restore(i); }
+					{
+						GameState::scene.restore(i);
+					}
 				}
 				ImGui::EndChild();
 
@@ -140,146 +146,8 @@ int main()
 
 			if (ImGui::BeginTabItem("Animator"))
 			{
-				ImDrawList* draw_list = ImGui::GetWindowDrawList();
-				ImVec2 canvas_p = ImGui::GetCursorScreenPos();
-				ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
-				canvas_sz.y = 300.0f; canvas_sz.x = 500.0f;
-				if (canvas_sz.x < 500.0f) canvas_sz.x = 500.0f;
-				if (canvas_sz.y < 300.0f) canvas_sz.y = 300.0f;
-				ImVec2 mouse_pos_global = ImGui::GetIO().MousePos;
-				ImVec2 mouse_pos_canvas = ImVec2(mouse_pos_global.x - canvas_p.x, 
-												 mouse_pos_global.y - canvas_p.y);
-				static ImVector <ImVec2> spline_control_points{};
-				ImVector <ImVec2> spline{};
-				static int number_of_control_points = 2;
-				static int time_slices = 100; // controls speed of animation also represents frames of animation
-				static float step_sz = canvas_sz.x / ((float)number_of_control_points - 1); // length betwen each control point
-
-				auto draw_canvas_bg = [&] {
-					ImGui::InvisibleButton("canvas", canvas_sz);
-
-					draw_list->AddRectFilledMultiColor(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y),
-													   IM_COL32(50, 50, 50, 255), IM_COL32(50, 50, 60, 255), IM_COL32(60, 60, 70, 255), IM_COL32(50, 50, 60, 255));
-
-					draw_list->AddRect(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y),
-									   IM_COL32(255, 255, 255, 255));
-				};
-
-				auto initialize_bezier_control_points = [&] {
-					if (spline_control_points.empty())
-					{
-						for (int i{ -1 }; i < number_of_control_points + 1; ++i)
-						{ // we need two points off screen on both sides so index at -1
-							spline_control_points.push_back(ImVec2(0 + (i * step_sz), canvas_sz.y / 2));
-						}
-					}
-				};
-
-				auto process_control_point_dragging = [&] {
-					static bool dragging_point = false;
-					static ImVec2* drag_point = &spline_control_points[0];
-					if (ImGui::IsMouseDragging(0) && dragging_point)
-					{
-						if (drag_point != &spline_control_points[1] 
-							&& drag_point != &spline_control_points[spline_control_points.size() - 2])
-						{ // first point and last point are dummy points, want to fix the second and second to last points
-							drag_point->x = mouse_pos_canvas.x;
-						}
-						if (drag_point == &spline_control_points[1])
-							spline_control_points[1] = *drag_point;
-						if (drag_point == &spline_control_points[spline_control_points.size()-2])
-							spline_control_points[spline_control_points.size()-2] = *drag_point;
-						drag_point->y = mouse_pos_canvas.y;
-
-					}
-					if (ImGui::IsMouseDown(0) && !dragging_point)
-					{
-						for (auto &control_point : spline_control_points)
-						{
-							if (std::abs(mouse_pos_canvas.x - control_point.x) < 7 &&
-								std::abs(mouse_pos_canvas.y - control_point.y) < 7)
-							{
-								dragging_point = true;
-								drag_point = &control_point;
-							}
-						}
-					}
-					if (ImGui::IsMouseReleased(0))
-					{
-						dragging_point = false;
-					}
-				}; 
-
-				auto draw_animation_graph = [&]
-				{
-					draw_list->PushClipRect(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y), true);
-					draw_list->AddLine(ImVec2(canvas_p.x + 0, canvas_p.y + (canvas_sz.y / 2)),
-									   ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + (canvas_sz.y / 2)),
-									   IM_COL32(255, 255, 255, 255), 1);
-
-					for (auto &p : spline) {
-						p.x += canvas_p.x;
-						p.y += canvas_p.y;
-					}
-
-					draw_list->AddPolyline(spline.Data, spline.size(), IM_COL32(0, 0, 0, 100), false, 2);
-
-					for (auto p : spline_control_points)
-					{
-						p.x += canvas_p.x;
-						p.y += canvas_p.y;
-						draw_list->AddCircle(p, 5, IM_COL32(255, 0, 0, 255), 5, 5);
-					}
-
-					draw_list->PopClipRect();
-
-				};
-
-				auto setup_animation_sliders = [&] {
-					ImGui::Separator();
-					if (ImGui::SliderInt("Number Of Control Points", &number_of_control_points, 2, 10)) {
-						spline_control_points.clear();
-						step_sz = canvas_sz.x / ((float)number_of_control_points - 1);
-					}
-					ImGui::SliderInt("Playback Speed", &time_slices, 1, 500, "");
-
-					Character &ch = GameState::scene.characters[1];
-
-					if (current_step < spline.size())
-					{
-						draw_list->AddLine(ImVec2(spline[current_step].x, canvas_p.y), ImVec2(spline[current_step].x, canvas_p.y + canvas_sz.y),
-										   IM_COL32(255, 0, 0, 255));
-						ch.set_pos(((canvas_sz.x - spline[current_step].y) / canvas_sz.x) * GameState::w_h.x, ch.center.y);
-					}
-					else current_step = 0;
-
-					if (ImGui::Button("Reset")) {
-						spline_control_points.clear(); 
-					} ImGui::SameLine();
-
-					if (ImGui::Button("Play"))
-					{
-						GameState::waiting_for_input = false;
-						auto spl = get_catmull_rom(spline_control_points, time_slices);
-						for (auto& p : spl) { p = (canvas_sz.x - p) / canvas_sz.x * GameState::w_h.x; }
-						event_handler->push_back(new MoveEvent(&ch, spl));
-					}
-					/*
-					if (ImGui::Button("Save"))
-					{
-						GameState::scene.fns[GameState::restore_point] =
-							[&ch, spline] { event_handler->push_back(new MoveEvent(&ch, spline)); };
-					}
-					*/
-				};
-
-				draw_canvas_bg();
-				initialize_bezier_control_points();
-				process_control_point_dragging();
-				spline = get_catmull_rom_drawn(spline_control_points, time_slices);
-				draw_animation_graph();
-				setup_animation_sliders();
-
+				animation_controller_x.update_and_draw();
+				ImGui::Separator();
 				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();
@@ -304,3 +172,145 @@ int main()
 
 	return 0;
 }
+
+/*
+ImDrawList* draw_list = ImGui::GetWindowDrawList();
+ImVec2 canvas_p = ImGui::GetCursorScreenPos();
+ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
+canvas_sz.y = 300.0f; canvas_sz.x = 500.0f;
+if (canvas_sz.x < 500.0f) canvas_sz.x = 500.0f;
+if (canvas_sz.y < 300.0f) canvas_sz.y = 300.0f;
+ImVec2 mouse_pos_global = ImGui::GetIO().MousePos;
+ImVec2 mouse_pos_canvas = ImVec2(mouse_pos_global.x - canvas_p.x,
+								 mouse_pos_global.y - canvas_p.y);
+static ImVector <ImVec2> spline_control_points{};
+ImVector <ImVec2> spline{};
+static int number_of_control_points = 2;
+static int time_slices = 100; // controls speed of animation also represents frames of animation
+static float step_sz = canvas_sz.x / ((float)number_of_control_points - 1); // length betwen each control point
+
+auto draw_canvas_bg = [&] {
+	ImGui::InvisibleButton("canvas", canvas_sz);
+
+	draw_list->AddRectFilledMultiColor(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y),
+									   IM_COL32(50, 50, 50, 255), IM_COL32(50, 50, 60, 255), IM_COL32(60, 60, 70, 255), IM_COL32(50, 50, 60, 255));
+
+	draw_list->AddRect(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y),
+					   IM_COL32(255, 255, 255, 255));
+};
+
+auto initialize_bezier_control_points = [&] {
+	if (spline_control_points.empty())
+	{
+		for (int i{ -1 }; i < number_of_control_points + 1; ++i)
+		{ // we need two points off screen on both sides so index at -1
+			spline_control_points.push_back(ImVec2(i * step_sz, canvas_sz.y / 2));
+		}
+	}
+};
+
+auto process_control_point_dragging = [&] {
+	static bool dragging_point = false;
+	static ImVec2* drag_point = &spline_control_points[0];
+	if (ImGui::IsMouseDragging(0) && dragging_point)
+	{
+		if (drag_point != &spline_control_points[1]
+			&& drag_point != &spline_control_points[spline_control_points.size() - 2])
+		{ // first point and last point are dummy points, want to fix the second and second to last points
+			drag_point->x = mouse_pos_canvas.x;
+		}
+		if (drag_point == &spline_control_points[1])
+			spline_control_points[1] = *drag_point;
+		if (drag_point == &spline_control_points[spline_control_points.size()-2])
+			spline_control_points[spline_control_points.size()-2] = *drag_point;
+		drag_point->y = mouse_pos_canvas.y;
+
+	}
+	if (ImGui::IsMouseDown(0) && !dragging_point)
+	{
+		for (auto &control_point : spline_control_points)
+		{
+			if (std::abs(mouse_pos_canvas.x - control_point.x) < 7 &&
+				std::abs(mouse_pos_canvas.y - control_point.y) < 7)
+			{
+				dragging_point = true;
+				drag_point = &control_point;
+			}
+		}
+	}
+	if (ImGui::IsMouseReleased(0))
+	{
+		dragging_point = false;
+	}
+};
+
+auto draw_animation_graph = [&]
+{
+	draw_list->PushClipRect(canvas_p, ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + canvas_sz.y), true);
+	draw_list->AddLine(ImVec2(canvas_p.x + 0, canvas_p.y + (canvas_sz.y / 2)),
+					   ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + (canvas_sz.y / 2)),
+					   IM_COL32(255, 255, 255, 255), 1);
+
+	for (auto &p : spline) {
+		p.x += canvas_p.x;
+		p.y += canvas_p.y;
+	}
+
+	draw_list->AddPolyline(spline.Data, spline.size(), IM_COL32(0, 0, 0, 100), false, 2);
+
+	for (auto p : spline_control_points)
+	{
+		p.x += canvas_p.x;
+		p.y += canvas_p.y;
+		draw_list->AddCircle(p, 5, IM_COL32(255, 0, 0, 255), 5, 5);
+	}
+
+	draw_list->PopClipRect();
+
+};
+
+auto setup_animation_sliders = [&] {
+	ImGui::Separator();
+	if (ImGui::SliderInt("Number Of Control Points", &number_of_control_points, 2, 10)) {
+		spline_control_points.clear();
+		step_sz = canvas_sz.x / ((float)number_of_control_points - 1);
+	}
+	ImGui::SliderInt("Playback Speed", &time_slices, 500, 10, "");
+
+	Character &ch = GameState::scene.characters[1];
+
+	if (current_step < spline.size())
+	{
+		draw_list->AddLine(ImVec2(spline[current_step].x, canvas_p.y), ImVec2(spline[current_step].x, canvas_p.y + canvas_sz.y),
+						   IM_COL32(255, 0, 0, 255));
+		ch.set_pos(((canvas_sz.x - spline[current_step].y) / canvas_sz.x) * GameState::w_h.x, ch.center.y);
+	}
+	else current_step = 0;
+
+	if (ImGui::Button("Reset")) {
+		spline_control_points.clear();
+	} ImGui::SameLine();
+
+	if (ImGui::Button("Play"))
+	{
+		GameState::waiting_for_input = false;
+		auto spl = get_catmull_rom(spline_control_points, time_slices);
+		for (auto& p : spl) { p = (canvas_sz.x - p) / canvas_sz.x * GameState::w_h.x; }
+		event_handler->push_back(new MoveEvent(&ch, spl));
+	}
+	/*
+	if (ImGui::Button("Save"))
+	{
+		GameState::scene.fns[GameState::restore_point] =
+			[&ch, spline] { event_handler->push_back(new MoveEvent(&ch, spline)); };
+	}
+};
+
+draw_canvas_bg();
+initialize_bezier_control_points();
+process_control_point_dragging();
+spline = get_catmull_rom_drawn(spline_control_points, time_slices);
+draw_animation_graph();
+setup_animation_sliders();
+
+*/

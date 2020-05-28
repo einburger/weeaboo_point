@@ -40,9 +40,10 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/src/parser.cpp
 	${PROJECT_SOURCE_DIR}/src/scene.cpp
 	${PROJECT_SOURCE_DIR}/src/text.cpp
-        ${PROJECT_SOURCE_DIR}/src/fileloader.cpp
+    ${PROJECT_SOURCE_DIR}/src/fileloader.cpp
 	${PROJECT_SOURCE_DIR}/src/eventhandler.cpp
 	${PROJECT_SOURCE_DIR}/src/graphing.cpp
+	${PROJECT_SOURCE_DIR}/src/animation_controller.cpp
 
 	${PROJECT_SOURCE_DIR}/src/imgui.cpp
 	${PROJECT_SOURCE_DIR}/src/imgui_demo.cpp
@@ -59,9 +60,10 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/include/parser.h
 	${PROJECT_SOURCE_DIR}/include/scene.h
 	${PROJECT_SOURCE_DIR}/include/text.h
-        ${PROJECT_SOURCE_DIR}/include/fileloader.h
+    ${PROJECT_SOURCE_DIR}/include/fileloader.h
 	${PROJECT_SOURCE_DIR}/include/graphing.h
 	${PROJECT_SOURCE_DIR}/include/utils.h
+	${PROJECT_SOURCE_DIR}/include/animation_controller.h
 	)
 
 target_include_directories(WeeabooPoint PUBLIC ${PROJECT_SOURCE_DIR}/include)

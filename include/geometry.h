@@ -7,7 +7,6 @@
 
 #include "utils.h"
 
-
 struct Sprite
 {
 	unsigned int	texture{};
@@ -95,7 +94,6 @@ struct Physical : public Textured
 struct Character : Physical
 {
 	std::string name{};
-
 	Character() = default;
 	Character(const std::string& name)
 	{

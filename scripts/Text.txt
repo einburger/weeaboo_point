@@ -1,6 +1,6 @@
 at BG011
 place sunohara cgsh10 30
-place nagisa cgng25z 50
+place nagisa cgng25z 60
 > A mysterious person approaches
 fadein nagisa linear 20 0 0 1 1
 > oogie boogie woogie doodie gooofy booooo booy boy boy boyboby
