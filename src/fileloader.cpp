@@ -55,12 +55,12 @@ namespace fileloader {
 			return it->second;
 		}
 
-		// have to read it in from the harddisk
+		// have to read it in from disk 
 		return [&]()
 		{
 			Sprite spr{};
 
-			uchar* img = stbi_load(fullpath.c_str(), &spr.wdth_hght.x, &spr.wdth_hght.y, 0, 4);
+			unsigned char* img = stbi_load(fullpath.c_str(), &spr.wdth_hght.x, &spr.wdth_hght.y, 0, 4);
 			glGenTextures(1, &spr.texture);
 			glBindTexture(GL_TEXTURE_2D, spr.texture);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spr.wdth_hght.x, spr.wdth_hght.y,

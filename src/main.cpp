@@ -15,10 +15,9 @@
 std::unique_ptr<EventHandler> event_handler(new EventHandler());
 
 size_t line_number = 0;
-size_t target_line = 0;
-size_t restore_point = 0;
 
 #include "scene.h" // scene_create
+int current_step = 0; // current animation time slice (animation frame)
 
 int main()
 {
@@ -75,6 +74,7 @@ int main()
 		{
 			if (!GameState::waiting_for_input)
 				event_handler->process();
+			current_step++;
 			GameState::dt--;
 		}
 
@@ -131,10 +131,7 @@ int main()
 				for (int i{ 1 }; i < line_number; ++i)
 				{
 					if (ImGui::Button(GameState::scene.script[i].c_str(), ImVec2(width, 20)))
-					{
-						restore_point = i - 1;
-						GameState::scene.restore(i-1);
-					}
+					{ GameState::scene.restore(i); }
 				}
 				ImGui::EndChild();
 
@@ -157,7 +154,6 @@ int main()
 				static int number_of_control_points = 2;
 				static int time_slices = 100; // controls speed of animation also represents frames of animation
 				static float step_sz = canvas_sz.x / ((float)number_of_control_points - 1); // length betwen each control point
-				static int current_step = 0; // current animation time slice (animation frame)
 
 				auto draw_canvas_bg = [&] {
 					ImGui::InvisibleButton("canvas", canvas_sz);
@@ -221,12 +217,11 @@ int main()
 									   ImVec2(canvas_p.x + canvas_sz.x, canvas_p.y + (canvas_sz.y / 2)),
 									   IM_COL32(255, 255, 255, 255), 1);
 
-					for (auto &p : spline)
-					{
+					for (auto &p : spline) {
 						p.x += canvas_p.x;
 						p.y += canvas_p.y;
-						draw_list->AddCircleFilled(p, 2, IM_COL32(0, 200, 200, 200), 5);
 					}
+
 					draw_list->AddPolyline(spline.Data, spline.size(), IM_COL32(0, 0, 0, 100), false, 2);
 
 					for (auto p : spline_control_points)
@@ -246,13 +241,17 @@ int main()
 						spline_control_points.clear();
 						step_sz = canvas_sz.x / ((float)number_of_control_points - 1);
 					}
-					ImGui::SliderInt("Animation Time Steps", &time_slices, 1, 500, "");
+					ImGui::SliderInt("Playback Speed", &time_slices, 1, 500, "");
 
 					Character &ch = GameState::scene.characters[1];
-					if (ImGui::SliderInt("Preview Step", &current_step, 0, time_slices)) {
-						if (current_step < spline.size())
-							ch.set_x(((300.0f - spline[current_step].y) / 300.0f) * GameState::w_h.x);
+
+					if (current_step < spline.size())
+					{
+						draw_list->AddLine(ImVec2(spline[current_step].x, canvas_p.y), ImVec2(spline[current_step].x, canvas_p.y + canvas_sz.y),
+										   IM_COL32(255, 0, 0, 255));
+						ch.set_pos(((canvas_sz.x - spline[current_step].y) / canvas_sz.x) * GameState::w_h.x, ch.center.y);
 					}
+					else current_step = 0;
 
 					if (ImGui::Button("Reset")) {
 						spline_control_points.clear(); 
@@ -260,21 +259,24 @@ int main()
 
 					if (ImGui::Button("Play"))
 					{
-						event_handler->events.clear();
 						GameState::waiting_for_input = false;
-						event_handler->push_back(new MoveEvent(&ch, spline));
+						auto spl = get_catmull_rom(spline_control_points, time_slices);
+						for (auto& p : spl) { p = (canvas_sz.x - p) / canvas_sz.x * GameState::w_h.x; }
+						event_handler->push_back(new MoveEvent(&ch, spl));
 					}
+					/*
 					if (ImGui::Button("Save"))
 					{
-						GameState::scene.fns[restore_point] =
+						GameState::scene.fns[GameState::restore_point] =
 							[&ch, spline] { event_handler->push_back(new MoveEvent(&ch, spline)); };
 					}
+					*/
 				};
 
 				draw_canvas_bg();
 				initialize_bezier_control_points();
 				process_control_point_dragging();
-				spline = get_catmull_rom(spline_control_points, time_slices);
+				spline = get_catmull_rom_drawn(spline_control_points, time_slices);
 				draw_animation_graph();
 				setup_animation_sliders();
 

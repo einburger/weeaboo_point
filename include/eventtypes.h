@@ -10,16 +10,14 @@ struct ParseEvent : BaseEvent
 struct MoveEvent : BaseEvent 
 {
 	Character* ch;
-	ImVector <ImVec2> positions{};
+	ImVector <float> positions;
 	size_t step = 0;
 
-	MoveEvent(Character* ch, ImVector<ImVec2> vec) : ch(ch), positions(vec) {}
+	MoveEvent(Character* ch, ImVector<float> vec) : ch(ch), positions(vec) {}
 
 	bool on_going() override
 	{
-		const float x = ((300.0f - positions[step].y) / 300.0f) * GameState::w_h.x;
-		const float y = ((500.0f - positions[step].y) / 500.0f) * GameState::w_h.y;
-		ch->set_x(x);
+		ch->set_pos(positions[step], ch->center.y);
 		return ++step < positions.size();
 	}
 };
@@ -27,14 +25,14 @@ struct MoveEvent : BaseEvent
 struct ColorEvent : BaseEvent
 {
 	Character* ch;
-	ImVector<ImVec4> colors;
+	ImVector<float> colors;
 	size_t step = 0;
 
-	ColorEvent(Character* ch, ImVector<ImVec4> cols) : ch(ch), colors(cols) {}
+	ColorEvent(Character* ch, ImVector<float> cols) : ch(ch), colors(cols) { }
 
 	bool on_going() override
 	{
-		ch->set_color(colors[step].x, colors[step].y, colors[step].z, colors[step].w);
+		ch->set_alpha(colors[step]);
 		return ++step < colors.size();
 	}
 };

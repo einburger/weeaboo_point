@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include <list>
-#include <any>
 #include <functional>
 #include <memory>
 
@@ -17,17 +16,16 @@ struct SavableData
 {
 	Character background{};
 	Character textbox{};
-	std::vector<std::string> script{ {} };
-	std::string dialog{};
-	std::vector<Character> characters{};
-	std::function<void()> executed_function;
 	Field textfield{};
+	std::vector<Character> characters{};
 };
 
 struct Scene : SavableData
 {
-	std::vector<std::function<void()>> fns;
+	std::string dialog{};
+	std::vector<std::vector<std::function<void()>>> command_history;
 	std::vector<SavableData> saves{};
+	std::vector<std::string> script{ {} };
 	Character continue_arrow{};
 
 	Scene() = default;

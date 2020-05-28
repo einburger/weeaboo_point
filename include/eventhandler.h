@@ -29,7 +29,6 @@ struct EventHandler {
     std::list<std::unique_ptr<BaseEvent>> events;
 
     void push_back(BaseEvent* event) {
-		std::cout << "pushed new event\n";
         events.emplace_back(event);
     }
 

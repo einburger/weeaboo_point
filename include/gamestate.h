@@ -18,6 +18,7 @@ namespace GameState {
 	extern bool					waiting_for_input;
 	extern int					text_cursor_pos;
 	extern bool					parsing;
+	extern int					restore_point;
 }
 
 // callbacks

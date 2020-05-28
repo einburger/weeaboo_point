@@ -1,8 +1,17 @@
 at BG011
-place sunohara cgsh10 80
-place nagisa cgng25z 80
-fadein nagisa 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
-set nagisa cgng35
+place sunohara cgsh10 30
+place nagisa cgng25z 50
+> A mysterious person approaches
+fadein nagisa linear 20 0 0 1 1
 > oogie boogie woogie doodie gooofy booooo booy boy boy boyboby
+set nagisa cgng35
 > that's right I'm te biggest wonk
 > who's the hunk honk hank
+set nagisa cgng25z
+fadein sunohara linear 20 0 0 1 1
+at BG009N2
+> disappear from my room nagisa
+fadeout nagisa linear 20 1 1 0 0
+> great!
+move sunohara linear 200 384 0 1280 0
+> i tell u hwut!

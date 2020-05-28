@@ -52,6 +52,8 @@ void Scene::load(const std::string& scriptpath)
 	}
 
 	file.close();
+
+	command_history.resize(script.size());
 }
 
 void Scene::draw()
@@ -91,9 +93,7 @@ void Scene::save(int i)
 	saves[i].background = background;
 	saves[i].textbox = textbox;
 	saves[i].textfield = textfield;
-	saves[i].script = script;
 	saves[i].characters = characters;
-	saves[i].dialog = dialog;
 }
 
 void Scene::restore(int i)
@@ -104,17 +104,15 @@ void Scene::restore(int i)
 	}
 
 	GameState::parsing = false;
+	GameState::waiting_for_input = false;
 
 	event_handler->events.clear();
 	GameState::text_cursor_pos = 0;
 
-	// restore states
-	background = saves[i].background;
 	textbox = saves[i].textbox;
-	textfield = saves[i].textfield;
-	script = saves[i].script;
+	background = saves[i].background;
 	characters = saves[i].characters;
-	dialog = saves[i].dialog;
-	GameState::waiting_for_input = false;
-	fns[i]();
+	GameState::scene.textfield.dl = DialogLines();
+	for (int k{}; k < command_history[i].size(); ++k)
+		command_history[i][k]();
 }

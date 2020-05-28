@@ -33,6 +33,7 @@ ImVector<ImVec2> get_bez(ImVec2& p0, ImVec2& p1, ImVec2& p2, ImVec2& p3, int tim
 
 	return vec;
 }
+/*
 
 ImVector<ImVec2> get_catmull_rom(ImVector<ImVec2> &points, int time_slices)
 {
@@ -79,3 +80,7 @@ ImVector<ImVec2> get_catmull_rom(ImVector<ImVec2> &points, int time_slices)
 	vec.push_back(points[points.Size - 2]);
 	return vec;
 }
+
+*/
+// ImVector <ImVec2> get_sin(ImVec2 start, int time_slices) {}
+// ImVector <ImVec2> get_step(ImVector<ImVec2> points, int time_slices) {}

@@ -9,7 +9,7 @@
 extern size_t line_number;
 extern size_t target_line;
 
-using Args = std::vector<std::string>&;
+using Args = std::vector<std::string>;
 
 bool parse();
 void set_bg(Args);

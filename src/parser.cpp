@@ -8,6 +8,7 @@
 #include "geometry.h"
 #include "eventhandler.h"
 #include "eventtypes.h"
+#include "graphing.h"
 
 std::unordered_map<std::string, void(*)(Args)> map({
 		{"at", set_bg},
@@ -19,51 +20,72 @@ std::unordered_map<std::string, void(*)(Args)> map({
 		{"fadeout", fade},
 		{"wait", scene_wait},
 		{">", write_line}
-												   });
+});
 
 bool parse()
 {
-	if (line_number > GameState::scene.script.size()) {
+	GameState::scene.dialog = "";
+	if (line_number >= GameState::scene.script.size()) {
+		// we've parsed all the lines in the script, parsing is done
 		GameState::parsing = false;
 		return false;
 	}
+	std::istringstream ss(GameState::scene.script[line_number]);
 
-	std::istringstream ss(GameState::scene.script[line_number++]);
-
+	// represents the command. at, play, move, etc.
 	std::string token{};
-	ss >> token; // represents the command. at, play, move, etc.
+	ss >> token; 
 
-	std::vector<std::string> remaining_tokens(1); // arguments from the command
+	// arguments passed to the command
+	std::vector<std::string> remaining_tokens(1); 
+
+	// remaining tokens looks like this { "4", "2", "" }  where "" is a placeholder for the next arg
+	// to be parsed
 	while (ss >> remaining_tokens.back())
 	{
+		// we dont' know how many args there are, so push back an empty string as a placeholder 
 		remaining_tokens.push_back("");
 	}
-	remaining_tokens.pop_back(); // last is empty;
+	// last is empty because we added empty strings anticipating another arg (removing the placeholder)
+	remaining_tokens.pop_back(); 
 
+	// find the function associated with the parsed action name
 	if (const auto& itr = map.find(token); itr != map.end())
 	{
 		const auto& [token_key, function] = *itr;
+
+		// call the function 
 		function(remaining_tokens);
+		
+		GameState::scene.save(GameState::scene.saves.size());
+
+		// each line has a sequence of commands associated with it (character A moves, character B talks, ...)
+		// store these actions in a vector of vectors of command_histories so we can re-play any line
+		GameState::scene.command_history[line_number].push_back(
+			[&function, remaining_tokens]{ function(remaining_tokens); }
+		);
+
+		line_number++;
 		return false;
 	}
 
+	GameState::scene.save(GameState::scene.saves.size());
+	line_number++;
 	return true;
 }
 
-void set_bg(std::vector<std::string>& argv)
+void set_bg(std::vector<std::string> argv)
 {
 	const auto& bg_name{ argv[0] };
 	std::string fullpath = "../backgrounds/" + bg_name + ".png";
 	GameState::scene.background.set_texture(fullpath);
-	GameState::scene.save(GameState::scene.saves.size());
-	GameState::scene.fns.push_back([] {});
 }
 
 
-void play_song(std::vector<std::string>& argv)
+void play_song(std::vector<std::string> argv)
 {}
 
-void place_character(std::vector<std::string>& argv)
+void place_character(std::vector<std::string> argv)
 {
 	const auto& character_name{ argv[0] };
 	auto emotion{ argv[1] };
@@ -74,13 +96,10 @@ void place_character(std::vector<std::string>& argv)
 
 	ch.set_texture(fullpath);
 	ch.scale_to_screen(); // scale texture to size
-	ch.set_pos(GameState::w_h.x * 0.5f, GameState::w_h.y - (ch.w_h.y * 0.5f));
-
-	GameState::scene.fns.push_back([] {});
-	GameState::scene.save(GameState::scene.saves.size());
+	ch.set_pos((x_pos/100) * GameState::w_h.x , GameState::w_h.y - (ch.w_h.y * 0.5f));
 }
 
-void set_emotion(std::vector<std::string>& argv)
+void set_emotion(std::vector<std::string> argv)
 {
 	const auto& character_name{ argv[0] };
 	const auto& emotion{ argv[1] };
@@ -89,69 +108,48 @@ void set_emotion(std::vector<std::string>& argv)
 	std::string fullpath = "../characters/" + character_name + "/" + emotion + ".png";
 
 	ch.set_texture(fullpath); // need fullpath
-
-	GameState::scene.fns.push_back([] {});
-	GameState::scene.save(GameState::scene.saves.size());
 }
 
-void move_character(std::vector<std::string>& argv)
+void move_character(std::vector<std::string> argv)
 {
 	const auto& character_name{ argv[0] };
-	auto x_pos{ std::stof(argv[1]) };
-
-	ImVector <ImVec2> positions;
-
-	for (int i{ 2 }; i < argv.size(); ++i)
-	{
-
-	}
+	const auto& interp_method{ argv[1] };
+	int time_steps{ std::stoi(argv[2]) };
 
 	auto& ch = GameState::scene.get_character(character_name);
 
-	auto percent_screen_width = [&]()
+	ImVector<ImVec2> points;
+	for (size_t i{ 3 }; i < argv.size(); i += 2)
 	{
-		auto character_half_width = [&]() { return ch.w_h.x / 2; };
-		return (x_pos / 100.0) * GameState::w_h.x - character_half_width();
-	};
-
-	event_handler->push_back(new MoveEvent(&ch, {}));
-
-	GameState::scene.fns.push_back(
-		[&]() { event_handler->push_back(new MoveEvent(&ch, {})); }
-	);
-
-	GameState::scene.save(GameState::scene.saves.size());
-}
-
-void fade(std::vector<std::string>& argv)
-{
-	const auto& character_name{ argv[0] };
-	auto &ch = GameState::scene.get_character(argv[0]);
-
-	ImVector<ImVec4> colors;
-	for (int i{ 1 }; i < argv.size(); ++i) {
-		ImVec4 color(1.0f, 1.0f, 1.0f, std::stof(argv[i]));
-		colors.push_back(color);
+		points.push_back( ImVec2(std::stoi(argv[i]), std::stoi(argv[i + 1])) );
 	}
 
-	event_handler->push_back(new ColorEvent(&ch, colors));
-
-	GameState::scene.fns.push_back(
-		[&ch, colors] { event_handler->push_back(new ColorEvent(&ch, colors)); }
-	);
-
-	GameState::scene.save(GameState::scene.saves.size());
+	if (interp_method == "linear") 
+		event_handler->push_back(new MoveEvent(&ch, get_linear(points[0], points[1], time_steps)));
+	if (interp_method == "spline")
+		event_handler->push_back(new MoveEvent(&ch, get_catmull_rom(points, time_steps)));
 }
 
-void scene_wait(std::vector<std::string>& argv)
+void fade(std::vector<std::string> argv)
 {
 	const auto& character_name{ argv[0] };
-	const float wait_time{ std::stof(argv[1]) };
+	auto &ch = GameState::scene.get_character(character_name);
+	const auto& interp_method{ argv[1] };
+	int time_steps{ std::stoi(argv[2]) };
 
-	auto& ch = GameState::scene.get_character(argv[0]);
+	ImVector<ImVec2> points;
+	for (size_t i{ 3 }; i < argv.size(); i += 2)
+	{
+		points.push_back(ImVec2(std::stof(argv[i]), std::stof(argv[i + 1])));
+	}
+
+	if (interp_method == "linear") 
+		event_handler->push_back(new ColorEvent(&ch, get_linear(points[0], points[1], time_steps)));
+	if (interp_method == "spline") 
+		event_handler->push_back(new ColorEvent(&ch, get_catmull_rom(points, time_steps)));
 }
 
-void write_line(std::vector<std::string>& argv)
+void write_line(std::vector<std::string> argv)
 {
 	auto merge_tokens = [&]()
 	{
@@ -164,9 +162,6 @@ void write_line(std::vector<std::string>& argv)
 	};
 	GameState::scene.dialog = merge_tokens();
 	event_handler->push_back(new DialogEvent(GameState::scene.dialog));
-	GameState::scene.fns.push_back(
-		[]{ event_handler->push_back(new DialogEvent(GameState::scene.dialog)); }
-	);
-	GameState::scene.save(GameState::scene.saves.size());
 }
 
+void scene_wait(std::vector<std::string> argv) { }

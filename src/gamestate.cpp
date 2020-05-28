@@ -15,6 +15,7 @@ const char*				GameState::window_title{ "WeeabooPoint" };
 bool					GameState::waiting_for_input{ false };
 int						GameState::text_cursor_pos{};
 bool					GameState::parsing{ true };
+int						GameState::restore_point{ 0 };
 
 void gamestate_window_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -43,6 +44,10 @@ void gamestate_key_callback(GLFWwindow* window, int key, int scancode, int actio
 			GameState::scene.dialog = "";
 			GameState::waiting_for_input = false;
 			event_handler->events.clear();
+			if (!GameState::parsing)
+			{
+				GameState::scene.restore(++GameState::restore_point);
+			}
 		}
 	}
 }
