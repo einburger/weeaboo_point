@@ -1,51 +1,61 @@
 #pragma once
 #include "imgui.h"
+#include <iostream>
+#include <vector>
 
-ImVector<ImVec2> get_bez(ImVec2& p0, ImVec2& p1, ImVec2& p2, ImVec2& p3, int time_slices);
-
-template <typename T = ImVec2>
-ImVector<T> get_sin_drawn(ImVector<ImVec2>& vec, int canvas_x, int amplitude)
+template<class T=int>
+void get_sin_drawn(std::vector<float>& frames_x, std::vector<float>& frames_y,
+				   std::vector<float>& ctrl_pts_x, std::vector<float> ctrl_pts_y, 
+				   int canvas_x, int amplitude)
 {
-	ImVector<ImVec2> points;
-	int idx{};
-	for (int k{ 2 }; k < vec.size()-1; ++k)
+	T x;
+	for (size_t k{ 1 }; k < ctrl_pts_x.size(); ++k)
 	{
-		for (int i{}; i <= std::abs(vec[k].x - vec[k - 1].x); ++i)
+		for (size_t i{}; i < std::abs(ctrl_pts_x[k] - ctrl_pts_x[k - 1]); ++i)
 		{
-			float t = (float)i / (float)std::abs(vec[k].x - vec[k - 1].x);
+			float t = (float)i / (float)std::abs(ctrl_pts_x[k] - ctrl_pts_x[k - 1]);
 			float y = std::cos(t*(22/7)) * (amplitude/2) * (k%2==0?-1:1) + (canvas_x/2);
-			points.push_back(ImVec2(idx++, y));
+			assert(frames_x.size() > ctrl_pts_x[k - 1] + i);
+			frames_y[ctrl_pts_x[k - 1] + i] = y;
+			frames_x[ctrl_pts_x[k - 1] + i] = ctrl_pts_x[k-1] + i;
 		}
 	}
-
-	return points;
 }
 
-template <typename T = ImVec2>
-ImVector<T> get_step_drawn(ImVector<ImVec2>& vec, int canvas_x)
+template<class T=int>
+void get_step_drawn(std::vector<float>& frames_x, std::vector<float>& frames_y, 
+				    std::vector<float>& ctrl_pts_x, std::vector<float>& ctrl_pts_y, 
+					int canvas_x)
 {
-	ImVector<ImVec2> points;
-	int k{};
-	for (int i{ 2 }; i < vec.size()-1; i++)
+	T x;
+	for (size_t i{ 1 }; i < ctrl_pts_x.size(); i++)
 	{
-		for (int j{}; j < std::abs(vec[i].x - vec[i-1].x); ++j)
+		for (size_t j{}; j < std::abs(ctrl_pts_x[i] - ctrl_pts_x[i-1]); ++j)
 		{
-			points.push_back(ImVec2(k++, vec[i-1].y));
+			assert(frames_x.size() > ctrl_pts_x[i - 1] + j);
+			frames_y[ctrl_pts_x[i - 1] + j] = ctrl_pts_y[i - 1];
+			frames_x[ctrl_pts_x[i - 1] + j] = ctrl_pts_x[i-1] + j;
 		}
 	}
-	return points;
 }
 
 template <typename T = ImVec2>
-ImVector<T> get_catmull_rom_drawn(ImVector<ImVec2> &vec, int canvas_x)
+void get_catmull_rom_drawn(std::vector<float>& frames_x, std::vector<float>& frames_y,
+						   std::vector<float> ctrl_pts_x, std::vector<float> ctrl_pts_y,
+						   int canvas_x)
 {
-	if (vec.Size < 4) {
-		return {};
+	if (ctrl_pts_x.size() < 4) {
+		return;
 	}
 
-	ImVector<ImVec2> points;
-	ImVec2 point;
-	//points.push_back(vec[1]);
+	// duplicate the starting point and end points because
+	// given 4 points, catmull rom interpolates between the 
+	// middle two and the outer two are basically control points
+	ctrl_pts_x.insert(ctrl_pts_x.begin(), ctrl_pts_x.front());
+	ctrl_pts_x.push_back(ctrl_pts_x.back());
+
+	ctrl_pts_y.insert(ctrl_pts_y.begin(), ctrl_pts_y.front());
+	ctrl_pts_y.push_back(ctrl_pts_y.back());
 
 	auto catmull_rom = [](float a, float b, float c, float d, float t)
 	{
@@ -55,62 +65,53 @@ ImVector<T> get_catmull_rom_drawn(ImVector<ImVec2> &vec, int canvas_x)
 					  + 2 * b);
 	};
 
-	auto uniform_catmull_rom = [&](ImVec2& p0, ImVec2& p1, ImVec2& p2, ImVec2& p3)
+	auto uniform_catmull_rom = [&](float x0, float x1, float x2, float x3,
+								   float y0, float y1, float y2, float y3)
 	{
-		for (int i{}; i < canvas_x; ++i)
+		for (size_t i{}; i < canvas_x; ++i)
 		{
 			float t = (float)i / (float)canvas_x;
 
-			int x = catmull_rom(p0.x, p1.x, p2.x, p3.x, t);
-			float y = catmull_rom(p0.y, p1.y, p2.y, p3.y, t);
+			int x = catmull_rom(x0, x1, x2, x3, t);
+			if (x >= frames_x.size() || x < 0) 
+				continue;
 
-			bool found = false;
-			for (auto& p : points)
-			{
-				if (x < 0 || x >= canvas_x) 
-					break;
-				if ((int)p.x == x)
-				{
-					found = true;
-					p.y = y;
-					break;
-				}
-			}
+			float y = catmull_rom(y0, y1, y2, y3, t);
 
-			if (!found && (x>0&&x<canvas_x)) { points.push_back(ImVec2(x, y)); }
+			frames_x[x] = x;
+			frames_y[x] = y;
 		}
-
 	};
 
-	for (int i{ 3 }; i < vec.Size; ++i)
+	for (size_t i{ 3 }; i < ctrl_pts_x.size(); ++i)
 	{
-		uniform_catmull_rom(vec[i-3], vec[i-2], vec[i-1], vec[i]);
+		uniform_catmull_rom(ctrl_pts_x[i - 3], ctrl_pts_x[i - 2], ctrl_pts_x[i - 1], ctrl_pts_x[i],
+							ctrl_pts_y[i - 3], ctrl_pts_y[i - 2], ctrl_pts_y[i - 1], ctrl_pts_y[i]);
 	}
-	
-	//points.push_back(vec[vec.Size - 2]);
-	return points;
 }
+
+
 template <typename T = float>
-ImVector<ImVec2> get_linear_drawn(ImVector<ImVec2>& vec, int canvas_x)
+void get_linear_drawn(std::vector<float>& frames_x, std::vector<float>& frames_y,
+								  std::vector<float>& ctrl_pts_x, std::vector<float>& ctrl_pts_y, 
+								  int canvas_x)
 {
 	auto linear_interp= [](float start, float end, float t)
 	{
 		return ((1.0f - t) * start) + (t * end);
 	};
 
-	ImVector<ImVec2> points;
-	int idx{};
-	for (int k{ 2 }; k < vec.size()-1; ++k)
+	for (int k{ 1 }; k < ctrl_pts_x.size(); ++k)
 	{
-		for (int i{}; i < std::abs(vec[k].x - vec[k-1].x); ++i)
+		for (int i{}; i < std::abs(ctrl_pts_x[k] - ctrl_pts_x[k - 1]); ++i)
 		{
-			float t = (float)i / (float)std::abs(vec[k].x-vec[k-1].x);
-			float y = linear_interp(vec[k - 1].y, vec[k].y, t);
-			points.push_back(ImVec2(idx++, y));
+			float t = (float)i / (float)std::abs(ctrl_pts_x[k] - ctrl_pts_x[k - 1]);
+			float y = linear_interp(ctrl_pts_y[k - 1], ctrl_pts_y[k], t);
+			
+			frames_x[ctrl_pts_x[k - 1] + i] = ctrl_pts_x[k - 1] + i;
+			frames_y[ctrl_pts_x[k - 1] + i] = y;
 		}
 	}
-
-	return points;
 }
 
 
@@ -178,6 +179,56 @@ ImVector<T> get_catmull_rom(ImVector<ImVec2> &points, int time_slices)
 	return vec;
 }
 
+template <typename T = ImVec2>
+ImVector<T> get_catmull_rom_drawn(ImVector<ImVec2> &vec, int canvas_x)
+{
+	if (vec.Size < 4) {
+		return {};
+	}
 
-// ImVector<ImVec2> get_sin(ImVec2 &start, int time_slices);
-// ImVector<ImVec2> get_step(ImVector <ImVec2>& points, int time_slices);
+	ImVector<ImVec2> points;
+	ImVec2 point;
+	//points.push_back(vec[1]);
+
+	auto catmull_rom = [](float a, float b, float c, float d, float t)
+	{
+		return 0.5f * ((-a + 3 * b - 3 * c + d) * t * t * t
+					  + (2 * a - 5 * b + 4 * c - d) * t * t
+					  + (-a + c) * t
+					  + 2 * b);
+	};
+
+	auto uniform_catmull_rom = [&](ImVec2& p0, ImVec2& p1, ImVec2& p2, ImVec2& p3)
+	{
+		for (int i{}; i < canvas_x; ++i)
+		{
+			float t = (float)i / (float)canvas_x;
+
+			int x = catmull_rom(p0.x, p1.x, p2.x, p3.x, t);
+			float y = catmull_rom(p0.y, p1.y, p2.y, p3.y, t);
+
+			bool found = false;
+			for (auto& p : points)
+			{
+				if (x < 0 || x >= canvas_x) 
+					break;
+				if ((int)p.x == x)
+				{
+					found = true;
+					p.y = y;
+					break;
+				}
+			}
+
+			if (!found && (x>0&&x<canvas_x)) { points.push_back(ImVec2(x, y)); }
+		}
+	};
+
+	for (int i{ 3 }; i < vec.Size; ++i)
+	{
+		uniform_catmull_rom(vec[i-3], vec[i-2], vec[i-1], vec[i]);
+	}
+	
+	return points;
+}
+

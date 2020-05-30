@@ -64,8 +64,7 @@ int main()
 	ImGui_ImplGlfw_InitForOpenGL(GameState::current_window, true);
 	ImGui_ImplOpenGL2_Init();
 
-	AnimationController animation_controller_x{};
-	AnimationController animation_controller_a{};
+	AnimationController animation_controller_x;
 	while (!glfwWindowShouldClose(GameState::current_window))
 	{
 		GameState::curr_time = glfwGetTime();
@@ -77,7 +76,7 @@ int main()
 			if (!GameState::waiting_for_input)
 				event_handler->process();
 			GameState::dt--;
-			animation_controller_x.current_step++;
+			animation_controller_x.window.update_frame_positions();
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT);
