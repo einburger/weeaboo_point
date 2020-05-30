@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <unordered_map>
 
 #include "imgui.h"
 #include "graphing.h"
@@ -41,8 +40,7 @@ struct AnimationWindow
 	std::vector<std::vector<float> > interpolated_x{ NUM_OF_FIELDS, std::vector<float>(FRAME_COUNT, 0) };
 	std::vector<std::vector<float> > interpolated_y{ NUM_OF_FIELDS, std::vector<float>(FRAME_COUNT, 300/2) };
 
-	// std::vector<int> field_interp_history{};
-	std::unordered_map<int, int> field_interp_history;
+	std::vector<int> field_interp_history{ LINEAR,LINEAR,LINEAR,LINEAR,LINEAR,LINEAR };
 
 	// 2d index to 1d index. y_pos * x_count + x_pos
 	std::vector<float>& get_ctrl_pts_x(size_t field_index_)

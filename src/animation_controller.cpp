@@ -119,11 +119,7 @@ void AnimationController::update_and_draw()
 		}
 
 		if (ImGui::Combo("Field", &field_index, fielditems)) {
-			if (auto it = window.field_interp_history.find(field_index);
-				it != window.field_interp_history.end())
-			{
-				interp_index = window.field_interp_history[field_index];
-			}
+			interp_index = window.field_interp_history[field_index];
 			new_ctrl_pt_count = window.ctrl_pts_x[field_index].size();
 		}
 
