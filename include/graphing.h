@@ -1,7 +1,9 @@
 #pragma once
 #include "imgui.h"
+
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 template<class T=int>
 void get_sin_drawn(std::vector<float>& frames_x, std::vector<float>& frames_y,

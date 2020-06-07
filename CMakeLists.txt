@@ -40,7 +40,7 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/src/parser.cpp
 	${PROJECT_SOURCE_DIR}/src/scene.cpp
 	${PROJECT_SOURCE_DIR}/src/text.cpp
-    ${PROJECT_SOURCE_DIR}/src/fileloader.cpp
+        ${PROJECT_SOURCE_DIR}/src/fileloader.cpp
 	${PROJECT_SOURCE_DIR}/src/eventhandler.cpp
 	${PROJECT_SOURCE_DIR}/src/graphing.cpp
 	${PROJECT_SOURCE_DIR}/src/animation_controller.cpp
@@ -55,12 +55,13 @@ add_executable(WeeabooPoint
 	${PROJECT_SOURCE_DIR}/include/eventhandler.h
 	${PROJECT_SOURCE_DIR}/include/eventtypes.h
 	${PROJECT_SOURCE_DIR}/include/gamestate.h
+	${PROJECT_SOURCE_DIR}/include/graphing.h
 	${PROJECT_SOURCE_DIR}/include/geometry.h
 	${PROJECT_SOURCE_DIR}/include/globals.h
 	${PROJECT_SOURCE_DIR}/include/parser.h
 	${PROJECT_SOURCE_DIR}/include/scene.h
 	${PROJECT_SOURCE_DIR}/include/text.h
-    ${PROJECT_SOURCE_DIR}/include/fileloader.h
+        ${PROJECT_SOURCE_DIR}/include/fileloader.h
 	${PROJECT_SOURCE_DIR}/include/graphing.h
 	${PROJECT_SOURCE_DIR}/include/utils.h
 	${PROJECT_SOURCE_DIR}/include/animation_controller.h

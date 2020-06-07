@@ -59,14 +59,11 @@ struct AnimationWindow
 		}
 	}
 
-	struct
-	{
-		ImVec2 canvas_p{};
-		ImVec2 canvas_sz{ 500.0, 300.0 };
-		ImVec2 mouse_pos_global{};
-		ImVec2 mouse_pos_canvas{};
-		ImDrawList* draw_list{ nullptr };
-	};
+        ImVec2 canvas_p{};
+        ImVec2 canvas_sz{ 500.0, 300.0 };
+        ImVec2 mouse_pos_global{};
+        ImVec2 mouse_pos_canvas{};
+        ImDrawList* draw_list{ nullptr };
 
 	void pre_update();
 	void draw_window();
